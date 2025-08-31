@@ -286,3 +286,190 @@ select {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* Custom css MR */
+
+/* Select */
+/* Base Select styling */
+.custom-select-ant .ant-select-selector {
+  padding: 8px 12px !important; /* inner padding */
+  background: transparent !important; /* transparent background */
+  height: 40px !important; /* fixed height */
+  line-height: 40px !important; /* vertically center text */
+  border: 1px solid #ffffff !important; /* border color */
+  box-shadow: none !important; /* remove default shadow */
+}
+
+/* Selected text & placeholder color */
+.custom-select-ant .ant-select-selection-item,
+.custom-select-ant .ant-select-selection-item span,
+.custom-select-ant .ant-select-selection-placeholder {
+  color: #ffffff !important;
+}
+
+/* Arrow icon styling */
+.custom-select-ant .ant-select-arrow {
+  top: 60% !important; /* vertically center arrow */
+  transform: translateY(-50%) !important;
+  margin-top: 0 !important;
+  color: #ffffff !important;
+}
+
+/* Remove focus styles */
+.custom-select-ant.ant-select-focused .ant-select-selector {
+  border-color: #ffffff !important; /* keep same border on focus */
+  box-shadow: none !important; /* remove blue focus shadow */
+}
+
+/* Search bar */
+.custom-input-ant {
+  padding: 8px 12px !important; /* inner padding */
+  height: 40px !important; /* fixed height */
+  line-height: 40px !important; /* vertically center text */
+  border: 1px solid #ffffff !important; /* border color */
+  background: transparent !important; /* transparent background */
+  color: #ffffff !important; /* text color */
+  box-shadow: none !important; /* remove focus shadow */
+}
+
+.custom-input-ant:focus {
+  border-color: #ffffff !important; /* same border on focus */
+  box-shadow: none !important; /* remove blue focus shadow */
+}
+
+.custom-input-ant::placeholder {
+  color: #ffffff !important; /* placeholder color */
+  opacity: 1; /* ensure full opacity in some browsers */
+}
+
+/* Tab */
+/* Selected tab */
+.custom-tabs .ant-tabs-tab-active {
+  color: #fff !important; /* text color of active tab */
+  /* background-color: #ffffff !important;  */
+  border-radius: 4px 4px 0 0 !important;
+}
+
+/* Inactive tabs */
+.custom-tabs .ant-tabs-tab {
+  color: #ccc !important; /* text color of inactive tabs */
+  /* background-color: #333d49 !important; */
+  border-radius: 4px 4px 0 0 !important;
+}
+
+/* Tab hover */
+.custom-tabs .ant-tabs-tab:hover {
+  color: #fff !important;
+  /* background-color: #1e1e1e !important; */
+}
+
+/* Reduce spacing below selected tab */
+.custom-tabs .ant-tabs-ink-bar {
+  height: 12px; /* thickness of the bottom line */
+  bottom: 10px !important; /* distance from the tab content bottom */
+  background-color: #ffffff; /* color of the bottom line */
+  border-radius: 1px; /* optional rounded ends */
+}
+
+/* Change selected tab text color */
+.custom-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ffffff !important; /* your desired color */
+}
+
+/* Optional: change unselected tab text color */
+.custom-tabs .ant-tabs-tab .ant-tabs-tab-btn {
+  color: #ffffff; /* color for inactive tabs */
+}
+
+.custom-tabs .ant-tabs-nav::before {
+  border-bottom: none !important; /* removes the bottom border line */
+}
+
+/* Modal */
+/* Input field styling */
+.custom-input-ant-modal {
+  padding: 8px 12px !important;
+  background: transparent !important;
+  color: #071952 !important;
+  border: 1px solid #071952 !important;
+  border-radius: 6px !important;
+  height: 40px !important;
+}
+
+.custom-input-ant-modal::placeholder {
+  color: #9d9ea1 !important;
+}
+
+/* Select field styling */
+.custom-select-ant-modal .ant-select-selector {
+  padding: 8px 12px !important;
+  background: transparent !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  border: 1px solid #071952 !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+}
+
+/* Selected text & placeholder color */
+.custom-select-ant-modal .ant-select-selection-item,
+.custom-select-ant-modal .ant-select-selection-item span,
+.custom-select-ant-modal .ant-select-selection-placeholder {
+  color: #9d9ea1 !important;
+}
+
+/* Arrow icon styling */
+.custom-select-ant-modal .ant-select-arrow {
+  top: 80% !important;
+  transform: translateY(-50%) !important;
+  color: #071952 !important;
+}
+
+/* Remove focus styles */
+.custom-select-ant-modal.ant-select-focused .ant-select-selector {
+  border-color: #071952 !important;
+  box-shadow: none !important;
+}
+
+/* Reduce bottom margin */
+.custom-form-item-ant {
+  margin-bottom: 0px !important; /* adjust as needed */
+}
+.custom-form-item-ant-select {
+  margin-bottom: 8px !important; /* adjust as needed */
+}
+
+/* Image upload */
+/* Make the upload list flex and wrap images */
+.ant-upload-list-picture-card {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px; /* spacing between images */
+}
+
+/* Keep each image card default size */
+.ant-upload-list-picture-card .ant-upload-list-item {
+  width: auto !important; /* default width */
+  height: auto !important; /* default height */
+}
+
+/* Ensure image fits the card */
+.ant-upload-list-picture-card img {
+  object-fit: cover;
+}
+
+/* Text area */
+.custom-input-ant-modal {
+  padding: 12px 16px; /* top-bottom 12px, left-right 16px */
+  background-color: #071952; /* optional background */
+  color: #ffffff; /* text color */
+  border: 1px solid #071952; /* border color */
+  border-radius: 4px; /* optional rounding */
+  line-height: 1.5; /* optional line height */
+}
+
+.ant-modal .ant-form-item-label > label {
+  color: #18191b;
+  font-weight: 600;
+  font-size: 14px;
+}

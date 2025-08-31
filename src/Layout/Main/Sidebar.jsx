@@ -66,6 +66,14 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       icon: renderIcon(Dashboard, "/"),
       label: <Link to="/">{collapsed ? "" : "Dashboard Overview"}</Link>,
     },
+
+    // Pigeon Hub Start
+    {
+      key: "/my-pigeon",
+      icon: renderIcon(Marchant, "/my-pigeon"),
+      label: <Link to="/my-pigeon">{collapsed ? "" : "My Pigeon"}</Link>,
+    },
+    // Pigeon Hub End
     {
       key: "/merchantManagement",
       icon: renderIcon(Marchant, "/merchantManagement"),

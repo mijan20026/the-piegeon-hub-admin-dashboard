@@ -142,6 +142,7 @@ const PigeonTable = () => {
               rowSelection={rowSelection}
               columns={columns}
               dataSource={dataSource}
+              rowClassName={() => "hover-row"} // ✅ add hover class
               components={{
                 header: {
                   cell: (props) => (

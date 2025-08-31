@@ -50,6 +50,7 @@ import ReportingAnalytics from "../components/reportingAnalytics/ReportingAnalyt
 import PushNotifications from "../components/pushNotifications/PushNotifications";
 // import SalesRepsManagementTable from "../components/SalesRepsManagement/SalesRepsManagement";
 import { Navigate } from "react-router-dom";
+import MyPigeon from "../components/myPigeon/MyPigeon";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
       {
         path: "/merchantManagement",
         element: <SaleRepsManagement />,
+      },
+      {
+        path: "/my-pigeon",
+        element: <MyPigeon />,
       },
       {
         path: "/customerManagement",
