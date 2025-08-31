@@ -51,6 +51,8 @@ import PushNotifications from "../components/pushNotifications/PushNotifications
 // import SalesRepsManagementTable from "../components/SalesRepsManagement/SalesRepsManagement";
 import { Navigate } from "react-router-dom";
 import MyPigeon from "../components/myPigeon/MyPigeon";
+import PigeonManagement from "../components/pigeonManagement/PigeonManagement";
+import VerifyBreeder from "../components/verifyBreeder/VerifyBreeder";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +64,7 @@ const router = createBrowserRouter([
     // ),
     element: <Main />,
     children: [
+      // Pigeon start
       {
         path: "/",
         element: <Home />,
@@ -74,6 +77,15 @@ const router = createBrowserRouter([
         path: "/my-pigeon",
         element: <MyPigeon />,
       },
+      {
+        path: "/pigeon-management",
+        element: <PigeonManagement />,
+      },
+      {
+        path: "/verify-breeder",
+        element: <VerifyBreeder />,
+      },
+      // Pigeon End
       {
         path: "/customerManagement",
         element: <CustomerManagement />,

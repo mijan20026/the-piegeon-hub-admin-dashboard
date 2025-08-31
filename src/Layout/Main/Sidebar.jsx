@@ -73,6 +73,22 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       icon: renderIcon(Marchant, "/my-pigeon"),
       label: <Link to="/my-pigeon">{collapsed ? "" : "My Pigeon"}</Link>,
     },
+    {
+      key: "/pigeon-management",
+      icon: renderIcon(Marchant, "/pigeon-management"),
+      label: (
+        <Link to="/pigeon-management">
+          {collapsed ? "" : "Pigeon Management"}
+        </Link>
+      ),
+    },
+    {
+      key: "/verify-breeder",
+      icon: renderIcon(Marchant, "/verify-breeder"),
+      label: (
+        <Link to="/verify-breeder">{collapsed ? "" : "Verify Breeder"}</Link>
+      ),
+    },
     // Pigeon Hub End
     {
       key: "/merchantManagement",
