@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Button,
   Table,
@@ -11,9 +11,10 @@ import {
   Tooltip,
   Switch,
 } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import AddVerifiedBadge from "./AddVerifiedBadge"; // Add Modal
 import { FaTrash } from "react-icons/fa";
+import Swal from "sweetalert2";
 import GermanyFlag from "../../../src/assets/country-flag.png";
 
 const { Option } = Select;
@@ -54,147 +55,193 @@ const initialData = [
   },
 ];
 
-const getColumns = (onEdit, onDelete) => [
-  { title: "Breeder Name", dataIndex: "breederName", key: "breederName" },
-  { title: "Pigeon Score", dataIndex: "pigeonScore", key: "pigeonScore" },
-  {
-    title: "Country",
-    dataIndex: "country",
-    key: "country",
-    render: (country) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-        <img
-          src={country.icon}
-          alt={country.name}
-          style={{ width: 20, height: 20, borderRadius: "50%" }}
-        />
-        <span>{country.name}</span>
-      </div>
-    ),
-  },
-  { title: "E-mail", dataIndex: "email", key: "email" },
-  { title: "Phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
-  { title: "Gender", dataIndex: "gender", key: "gender" },
-  {
-    title: "Experience Level",
-    dataIndex: "experienceLevel",
-    key: "experienceLevel",
-  },
-  { title: "Status", dataIndex: "status", key: "status" },
-  {
-    title: "Actions",
-    key: "actions",
-    width: 160,
-    render: (_, record) => (
-      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-        {/* Edit */}
-        <Tooltip title="View & Update Details">
-          <EditOutlined
-            className="text-white hover:text-gray-400 text-xl"
-            onClick={() => showViewModal(record)}
-          />
-        </Tooltip>
-
-        {/* Delete */}
-        <Tooltip title="Delete">
-          <FaTrash
-            style={{ color: "#ff4d4f", fontSize: "16px", cursor: "pointer" }}
-            onClick={() => {
-              Swal.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  setData(data.filter((item) => item.id !== record.id));
-                  Swal.fire({
-                    title: "Deleted!",
-                    text: "User has been deleted.",
-                    icon: "success",
-                  });
-                }
-              });
-            }}
-          />
-        </Tooltip>
-
-        {/* Status */}
-        <Tooltip title="Status">
-          <Switch
-            size="small"
-            checked={record.status === "Active"}
-            style={{
-              backgroundColor: record.status === "Active" ? "#3fae6a" : "gray",
-            }}
-            onChange={(checked) => {
-              Swal.fire({
-                title: "Are you sure?",
-                text: `You are about to change status to ${
-                  checked ? "Active" : "Inactive"
-                }.`,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, change it!",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  setData((prev) =>
-                    prev.map((item) =>
-                      item.id === record.id
-                        ? { ...item, status: checked ? "Active" : "Inactive" }
-                        : item
-                    )
-                  );
-                  Swal.fire({
-                    title: "Updated!",
-                    text: `Status has been changed to ${
-                      checked ? "Active" : "Inactive"
-                    }.`,
-                    icon: "success",
-                    timer: 1500,
-                    showConfirmButton: false,
-                  });
-                }
-              });
-            }}
-          />
-        </Tooltip>
-      </div>
-    ),
-  },
-];
-
 const VerifyBreeder = () => {
   const [data, setData] = useState(initialData);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editingData, setEditingData] = useState(null);
 
-  const handleEdit = (record) => {
+  // Filters state
+  const [searchText, setSearchText] = useState("");
+  const [filterCountry, setFilterCountry] = useState("all");
+  const [filterGender, setFilterGender] = useState("all");
+  const [filterExperience, setFilterExperience] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+
+  const showViewModal = (record) => {
     setEditingData(record);
     setIsEditModalVisible(true);
-  };
-
-  const handleDelete = (record) => {
-    console.log("Delete row:", record);
-    setData((prev) => prev.filter((item) => item.key !== record.key));
   };
 
   const handleEditSave = (values) => {
     setData((prev) =>
       prev.map((item) =>
-        item.key === editingData.key ? { ...editingData, ...values } : item
+        item.key === editingData.key
+          ? {
+              ...editingData,
+              ...values,
+              country: { ...editingData.country, name: values.country },
+            }
+          : item
       )
     );
     setIsEditModalVisible(false);
   };
 
-  const columns = getColumns(handleEdit, handleDelete);
+  const handleDelete = (record) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setData(data.filter((item) => item.key !== record.key));
+        Swal.fire({
+          title: "Deleted!",
+          text: "User has been deleted.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
+  const handleStatusChange = (record, checked) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to change status to ${
+        checked ? "Active" : "Inactive"
+      }.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, change it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setData((prev) =>
+          prev.map((item) =>
+            item.key === record.key
+              ? { ...item, status: checked ? "Active" : "Inactive" }
+              : item
+          )
+        );
+        Swal.fire({
+          title: "Updated!",
+          text: `Status has been changed to ${
+            checked ? "Active" : "Inactive"
+          }.`,
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
+  const getColumns = () => [
+    { title: "Breeder Name", dataIndex: "breederName", key: "breederName" },
+    { title: "Pigeon Score", dataIndex: "pigeonScore", key: "pigeonScore" },
+    {
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
+      render: (country) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+          <img
+            src={country.icon}
+            alt={country.name}
+            style={{ width: 20, height: 20, borderRadius: "50%" }}
+          />
+          <span>{country.name}</span>
+        </div>
+      ),
+    },
+    { title: "E-mail", dataIndex: "email", key: "email" },
+    { title: "Phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
+    { title: "Gender", dataIndex: "gender", key: "gender" },
+    {
+      title: "Experience Level",
+      dataIndex: "experienceLevel",
+      key: "experienceLevel",
+    },
+    { title: "Status", dataIndex: "status", key: "status" },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 160,
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+          <Tooltip title="View & Update Details">
+            <EditOutlined
+              className="text-white hover:text-gray-400 text-xl"
+              onClick={() => showViewModal(record)}
+            />
+          </Tooltip>
+
+          <Tooltip title="Delete">
+            <FaTrash
+              style={{ color: "#ff4d4f", fontSize: "16px", cursor: "pointer" }}
+              onClick={() => handleDelete(record)}
+            />
+          </Tooltip>
+
+          <Tooltip title="Status">
+            <Switch
+              size="small"
+              checked={record.status === "Active"}
+              style={{
+                backgroundColor:
+                  record.status === "Active" ? "#3fae6a" : "gray",
+              }}
+              onChange={(checked) => handleStatusChange(record, checked)}
+            />
+          </Tooltip>
+        </div>
+      ),
+    },
+  ];
+
+  // Filtered data using useMemo for performance
+  const filteredData = useMemo(() => {
+    return data.filter((item) => {
+      const searchMatch =
+        item.breederName.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.email.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.phoneNumber.toLowerCase().includes(searchText.toLowerCase());
+
+      const countryMatch =
+        filterCountry === "all" ||
+        item.country.name.toLowerCase() === filterCountry.toLowerCase();
+      const genderMatch =
+        filterGender === "all" ||
+        item.gender.toLowerCase() === filterGender.toLowerCase();
+      const experienceMatch =
+        filterExperience === "all" ||
+        item.experienceLevel.toLowerCase() === filterExperience.toLowerCase();
+      const statusMatch =
+        filterStatus === "all" ||
+        item.status.toLowerCase() === filterStatus.toLowerCase();
+
+      return (
+        searchMatch &&
+        countryMatch &&
+        genderMatch &&
+        experienceMatch &&
+        statusMatch
+      );
+    });
+  }, [
+    data,
+    searchText,
+    filterCountry,
+    filterGender,
+    filterExperience,
+    filterStatus,
+  ]);
 
   return (
     <div className="w-full">
@@ -211,77 +258,86 @@ const VerifyBreeder = () => {
       {/* Tabs and Filters */}
       <div className="bg-[#333D49] rounded-lg shadow-lg border border-gray-200 mb-2">
         <Row gutter={[16, 16]} className="flex flex-wrap px-4 mb-4 mt-4">
-          {/* Search Bar */}
+          {/* Search */}
           <Col xs={24} sm={12} md={6} lg={5}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Search</label>
-              <Input placeholder="Search..." className="custom-input-ant" />
+              <Input
+                placeholder="Search..."
+                className="custom-input-ant"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
             </div>
           </Col>
 
-          {/* Country Dropdown */}
+          {/* Country */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Country</label>
               <Select
                 placeholder="Select Country"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
+                value={filterCountry}
+                onChange={setFilterCountry}
               >
                 <Option value="all">All</Option>
-                <Option value="usa">USA</Option>
-                <Option value="uk">UK</Option>
-                <Option value="canada">Canada</Option>
-                <Option value="germany">Germany</Option>
+                <Option value="USA">USA</Option>
+                <Option value="UK">UK</Option>
+                <Option value="Canada">Canada</Option>
+                <Option value="Germany">Germany</Option>
               </Select>
             </div>
           </Col>
 
-          {/* Gender Dropdown */}
+          {/* Gender */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Gender</label>
               <Select
                 placeholder="Select Gender"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
+                value={filterGender}
+                onChange={setFilterGender}
               >
                 <Option value="all">All</Option>
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
+                <Option value="Male">Male</Option>
+                <Option value="Female">Female</Option>
               </Select>
             </div>
           </Col>
 
-          {/* Experience Level Dropdown */}
+          {/* Experience Level */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Experience Level</label>
               <Select
                 placeholder="Select Level"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
+                value={filterExperience}
+                onChange={setFilterExperience}
               >
                 <Option value="all">All</Option>
-                <Option value="beginner">Beginner</Option>
-                <Option value="intermediate">Intermediate</Option>
-                <Option value="expert">Expert</Option>
+                <Option value="Beginner">Beginner</Option>
+                <Option value="Intermediate">Intermediate</Option>
+                <Option value="Expert">Expert</Option>
               </Select>
             </div>
           </Col>
 
-          {/* Status Dropdown */}
+          {/* Status */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Status</label>
               <Select
                 placeholder="Select Status"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
+                value={filterStatus}
+                onChange={setFilterStatus}
               >
                 <Option value="all">All</Option>
-                <Option value="active">Active</Option>
-                <Option value="inactive">Inactive</Option>
+                <Option value="Active">Active</Option>
+                <Option value="Inactive">Inactive</Option>
               </Select>
             </div>
           </Col>
@@ -293,8 +349,8 @@ const VerifyBreeder = () => {
         <div className="border rounded-lg shadow-md bg-gray-50">
           <div style={{ minWidth: "max-content" }}>
             <Table
-              columns={columns}
-              dataSource={data}
+              columns={getColumns()}
+              dataSource={filteredData}
               rowClassName={() => "hover-row"}
               components={{
                 header: {
@@ -354,6 +410,7 @@ const VerifyBreeder = () => {
       />
 
       {/* Edit Modal */}
+      {/* Edit Modal */}
       <Modal
         title="Edit Verified Breeder"
         open={isEditModalVisible}
@@ -364,7 +421,13 @@ const VerifyBreeder = () => {
         {editingData && (
           <Form
             layout="vertical"
-            initialValues={editingData}
+            initialValues={{
+              ...editingData,
+              country: editingData.country.name,
+              gender: editingData.gender,
+              experienceLevel: editingData.experienceLevel,
+              status: editingData.status,
+            }}
             onFinish={handleEditSave}
             className="mb-6"
           >
@@ -416,10 +479,10 @@ const VerifyBreeder = () => {
                     placeholder="Select Country"
                     className="custom-select-ant-modal"
                   >
-                    <Option value="usa">USA</Option>
-                    <Option value="uk">UK</Option>
-                    <Option value="canada">Canada</Option>
-                    <Option value="germany">Germany</Option>
+                    <Option value="USA">USA</Option>
+                    <Option value="UK">UK</Option>
+                    <Option value="Canada">Canada</Option>
+                    <Option value="Germany">Germany</Option>
                   </Select>
                 </Form.Item>
               </Col>
@@ -471,8 +534,8 @@ const VerifyBreeder = () => {
                     placeholder="Select Gender"
                     className="custom-select-ant-modal"
                   >
-                    <Option value="male">Male</Option>
-                    <Option value="female">Female</Option>
+                    <Option value="Male">Male</Option>
+                    <Option value="Female">Female</Option>
                   </Select>
                 </Form.Item>
               </Col>
@@ -494,9 +557,9 @@ const VerifyBreeder = () => {
                     placeholder="Select Experience Level"
                     className="custom-select-ant-modal"
                   >
-                    <Option value="beginner">Beginner</Option>
-                    <Option value="intermediate">Intermediate</Option>
-                    <Option value="expert">Expert</Option>
+                    <Option value="Beginner">Beginner</Option>
+                    <Option value="Intermediate">Intermediate</Option>
+                    <Option value="Expert">Expert</Option>
                   </Select>
                 </Form.Item>
               </Col>
@@ -513,9 +576,9 @@ const VerifyBreeder = () => {
                     placeholder="Select Status"
                     className="custom-select-ant-modal"
                   >
-                    <Option value="active">Active</Option>
-                    <Option value="inactive">Inactive</Option>
-                    <Option value="pending">Pending</Option>
+                    <Option value="Active">Active</Option>
+                    <Option value="Inactive">Inactive</Option>
+                    <Option value="Pending">Pending</Option>
                   </Select>
                 </Form.Item>
               </Col>
