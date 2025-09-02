@@ -89,6 +89,22 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         <Link to="/verify-breeder">{collapsed ? "" : "Verify Breeder"}</Link>
       ),
     },
+    {
+      key: "/user-management",
+      icon: renderIcon(loginCredentials, "/user-management"),
+      label: (
+        <Link to="/user-management">{collapsed ? "" : "User Management"}</Link>
+      ),
+    },
+    {
+      key: "/subscription",
+      icon: renderIcon(SubscriptionManagement, "/subscription"),
+      label: (
+        <Link to="/subscription">
+          {collapsed ? "" : "Subscription Package"}
+        </Link>
+      ),
+    },
     // Pigeon Hub End
     {
       key: "/merchantManagement",
@@ -125,15 +141,6 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       ),
     },
     {
-      key: "/subscription",
-      icon: renderIcon(SubscriptionManagement, "/subscription"),
-      label: (
-        <Link to="/subscription">
-          {collapsed ? "" : "Subscription Package"}
-        </Link>
-      ),
-    },
-    {
       key: "/promotionManagement",
       icon: renderIcon(PromotionManagement, "/promotionManagement"),
       label: (
@@ -153,15 +160,6 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       key: "/auditLogs",
       icon: renderIcon(AuditLog, "/auditLogs"),
       label: <Link to="/auditLogs">{collapsed ? "" : "Audit Logs"}</Link>,
-    },
-    {
-      key: "/loginCredentials",
-      icon: renderIcon(loginCredentials, "/loginCredentials"),
-      label: (
-        <Link to="/loginCredentials">
-          {collapsed ? "" : "Login Credentials"}
-        </Link>
-      ),
     },
     {
       key: "/pushNotification",

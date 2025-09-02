@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Modal, Form, Input, List, message, Select } from "antd";
+import { Card, Button, Modal, Form, Input, List, message, Select, Row, Col } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -16,52 +16,60 @@ const PackagesPlans = () => {
   const defaultPackages = [
     {
       id: 1,
-      title: "Basic Plan",
-      description: "Billed annually.",
+      title: "Freebie",
+      description:
+        "Ideal for individuals who who need advanced features and tools for client work.",
       price: 0,
       duration: "1 month",
       features: [
-        "5 User Accounts",
-        "Basic Analytics",
-        "24/7 Support",
-        "10GB Storage",
-        "Email Integration",
+        "100+ of PNG & SVG Uploaded Pictures",
+        "Access to 4 Generation Details",
+        "Upload custom icons and fonts",
+        "Unlimited Sharing",
+        "Upload graphics & video in up to 4k",
+        "Unlimited Projects",
+        "Instant Access to our design system",
+        "Create teams to collaborate on designs",
       ],
       popular: false,
       active: true,
     },
     {
       id: 2,
-      title: "Gold Plan",
-      description: "Billed annually.",
+      title: "Professional",
+      description:
+        "Ideal for individuals who who need advanced features and tools for client work.",
       price: 20,
       duration: "6 months",
       features: [
-        "25 User Accounts",
-        "Advanced Analytics",
-        "24/7 Priority Support",
-        "50GB Storage",
-        "Email & CRM Integration",
+        "Unlimited Uploaded Pictures",
+        "Unlimited Access to 100 million stock images",
+        "Upload custom icons and fonts",
+        "Unlimited Sharing",
+        "Upload graphics & video in up to 4k",
+        "Unlimited Projects",
+        "Instant Access to our design system",
+        "Create teams to collaborate on designs",
       ],
       popular: true,
       active: false,
     },
-    {
-      id: 3,
-      title: "Premium Plan",
-      description: "Billed annually.",
-      price: 40,
-      duration: "1 year",
-      features: [
-        "Unlimited User Accounts",
-        "Enterprise Analytics",
-        "Dedicated Account Manager",
-        "Unlimited Storage",
-        "Complete System Integration",
-      ],
-      popular: false,
-      active: true,
-    },
+    // {
+    //   id: 3,
+    //   title: "Premium Plan",
+    //   description: "Billed annually.",
+    //   price: 40,
+    //   duration: "1 year",
+    //   features: [
+    //     "Unlimited User Accounts",
+    //     "Enterprise Analytics",
+    //     "Dedicated Account Manager",
+    //     "Unlimited Storage",
+    //     "Complete System Integration",
+    //   ],
+    //   popular: false,
+    //   active: true,
+    // },
   ];
 
   // Local state for packages
@@ -165,16 +173,69 @@ const PackagesPlans = () => {
   };
 
   // Get card background color based on package popularity
+  // Example: Different styles for different packages
   const getCardStyle = (pkg) => {
     if (pkg.popular) {
-      return "shadow-sm rounded-xl  bg-gradient-to-b from-blue-50 to-white hover:shadow-md transition-all transform hover:-translate-y-1";
+      // Popular package style
+      return "shadow-lg rounded-lg bg-[#071952] hover:shadow-xl transition-all transform hover:-translate-y-1";
     }
-    return "shadow-sm rounded-xl border border-gray-200 bg-white hover:shadow-md transition-all transform hover:-translate-y-1";
+
+    if (pkg.title === "Freebie") {
+      return "shadow-sm rounded-lg border border-gray-300 bg-[#F9FAFB] hover:shadow-md transition-all transform hover:-translate-y-1";
+    }
+
+    if (pkg.title === "Professional") {
+      return "shadow-md rounded-lg border border-gray-400 bg-[#E6F7FF] hover:shadow-lg transition-all transform hover:-translate-y-1";
+    }
+
+    // Default style
+    return "shadow-sm rounded-lg border border-gray-200 bg-[#F2F2F2] hover:shadow-md transition-all transform hover:-translate-y-1";
+  };
+
+  const getTitleStyle = (pkg) => {
+    if (pkg.popular) {
+      return "text-white text-[22px] font-semibold"; // popular package title
+    }
+    // Default style
+    return "text-[#071952] text-[22px] font-semibold";
+  };
+
+  const getPriceStyle = (pkg) => {
+    if (pkg.popular) {
+      return "text-white text-[56px] font-semibold"; // popular package title
+    }
+    // Default style
+    return "text-[#071952] text-[56px] font-semibold";
+  };
+
+  const getDurationStyle = (pkg) => {
+    if (pkg.popular) {
+      return "text-white text-[16px] font-regular"; // popular package title
+    }
+    // Default style
+    return "text-[#071952] text-[16px] font-regular";
+  };
+
+  const getDescriptionStyle = (pkg) => {
+    if (pkg.popular) {
+      return "text-white text-[16px] font-thin"; // popular package title
+    }
+    // Default style
+    return "text-[#071952] text-[16px] font-thin";
+  };
+
+  const getFeatureStyle = (pkg) => {
+    if (pkg.popular) {
+      return "text-white text-[16px] font-thin"; // popular package title
+    }
+    // Default style
+    return "text-[#071952] text-[16px] font-thin";
   };
 
   return (
-    <div className=" px-4">
-      <div className="flex flex-col justify-center items-center mb-8">
+    <div className="flex !justify-center !items-center mt-10">
+      <div className="max-w-[1000px]">
+        {/* <div className="flex flex-col justify-center items-center mb-8">
         <p className="bg-primary px-[12px] py-[4px] text-white rounded-3xl mb-2">
           Pricing Plan
         </p>
@@ -185,195 +246,213 @@ const PackagesPlans = () => {
           Simple, transparent pricing that grows with you. Try any plan free for
           30 days.
         </p>
-        {/* <GradientButton
+        <GradientButton
           type="primary"
           icon={<PlusOutlined />}
           className=" text-white px-5 py-2 h-auto rounded-lg shadow-lg hover:bg-[#012F60] transition-all flex items-center"
           onClick={() => showModal()}
         >
           Add Package
-        </GradientButton> */}
-      </div>
+        </GradientButton>
+      </div> */}
 
-      {packages.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          <p className="text-lg">No packages available.</p>
-          <p>Click the "Add Package" button to create your first package.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {packages.map((pkg) => (
-            <Card
-              key={pkg.id}
-              title={null}
-              bordered={false}
-              className={getCardStyle(pkg)}
-              extra={null}
-            >
-              <div className="flex justify-end mb-2">
-                <div className="flex gap-2">
-                  <Button
-                    icon={<EditOutlined />}
-                    onClick={() => showModal(pkg)}
-                    className="text-gray-800 border-gray-800 hover:text-primary hover:border-primary"
-                  />
-                  {/* <Button
+        {packages.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <p className="text-lg">No packages available.</p>
+            <p>Click the "Add Package" button to create your first package.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+            {packages.map((pkg) => (
+              <Card
+                key={pkg.id}
+                title={null}
+                bordered={false}
+                className={getCardStyle(pkg)}
+                extra={null}
+              >
+                <div className="flex justify-end mb-2">
+                  <div className="flex gap-2">
+                    <Button
+                      icon={<EditOutlined />}
+                      onClick={() => showModal(pkg)}
+                      className="text-gray-800 border-gray-800 hover:text-primary hover:border-primary"
+                    />
+                    {/* <Button
                     icon={<DeleteOutlined />}
                     onClick={() => handleDelete(pkg.id)}
                     className="text-red-600 border-red-300 hover:text-red-800 hover:border-red-500"
                   /> */}
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col justify-center items-center mb-4">
-                <img
-                  src={SubscriptionHeadingIcon}
-                  alt="Subscription Icon"
-                  className="w-[40px] h-[40px] mb-4"
-                />
-                <h3 className="text-[20px] font-semibold text-primary mb-[8px]">
-                  {pkg.title}
-                </h3>
-                <div className="mb-2">
-                  <span className="text-secondary font-semibold text-[38px]">
-                    ${pkg.price}/mth
-                  </span>
-                  {/* <span className="text-gray-500 ml-2">/ {pkg.duration}</span> */}
+                <div className="flex flex-col justify-start items-start mb-4">
+                  {/* <img
+                    src={SubscriptionHeadingIcon}
+                    alt="Subscription Icon"
+                    className="w-[40px] h-[40px] mb-4"
+                  /> */}
+                  <h3 className={getTitleStyle(pkg)}>{pkg.title}</h3>
+                  <div className="mb-2">
+                    <span className={getPriceStyle(pkg)}>
+                      ${pkg.price}
+                      <span className={getDurationStyle(pkg)}>/year</span>
+                    </span>
+                    {/* <span className="text-gray-500 ml-2">/ {pkg.duration}</span> */}
+                  </div>
+                  <p className={getDescriptionStyle(pkg)}>{pkg.description}</p>
                 </div>
-                <p className="text-[16px] font-normal text-center text-[#667085]">
-                  {pkg.description}
-                </p>
-              </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
-                {/* <h4 className="font-semibold text-gray-700 mb-2">
+                <div className="p-4 rounded-lg">
+                  {/* <h4 className="font-semibold text-gray-700 mb-2">
                   Features Include:
                 </h4> */}
-                <List
-                  size="small"
-                  dataSource={pkg.features}
-                  renderItem={(feature) => (
-                    <List.Item className="text-gray-700 border-none py-1">
-                      <div className="flex items-start">
-                        <CheckCircleFilled className="text-green-500 mr-2 mt-1" />
-                        <span>{feature}</span>
-                      </div>
-                    </List.Item>
-                  )}
-                />
-              </div>
-              {/* <Button className="w-full mt-12 border border-primary hover:!bg-primary hover:!text-white">
+                  <List
+                    size="small"
+                    dataSource={pkg.features}
+                    renderItem={(feature) => (
+                      <List.Item className="text-gray-700 border-none py-1">
+                        <div className="flex items-start">
+                          <CheckCircleFilled className="text-green-500 mr-2 text-[20px]" />
+                          <span className={getFeatureStyle(pkg)}>
+                            {feature}
+                          </span>
+                        </div>
+                      </List.Item>
+                    )}
+                  />
+                </div>
+                {/* <Button className="w-full mt-12 border border-primary hover:!bg-primary hover:!text-white">
                 Turn Off
               </Button> */}
-              <Button
-                className={`w-full mt-12 border ${
-                  pkg.active
-                    ? "border-primary hover:!bg-primary hover:!text-white"
-                    : "border-gray-400 text-gray-400 hover:!bg-gray-400 hover:!text-white"
-                }`}
-                onClick={() => togglePackageStatus(pkg.id)}
-              >
-                {pkg.active ? "Turn Off" : "Turn On"}
-              </Button>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      <Modal
-        title={isEditing ? "Edit Package" : "Add Package"}
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null}
-        className="rounded-lg"
-        width={600}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            name="title"
-            label="Package Title"
-            rules={[{ required: true, message: "Title is required" }]}
-          >
-            <Input placeholder="e.g. Basic Plan" />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="Description"
-            rules={[{ required: true, message: "Description is required" }]}
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Short description of what this package offers"
-              disabled={isEditing}
-            />
-          </Form.Item>
-
-          <div className="flex gap-4">
-            <Form.Item
-              name="price"
-              label="Price"
-              rules={[{ required: true, message: "Price is required" }]}
-              className="w-1/2"
-            >
-              <Input type="number" prefix="$" placeholder="29.99" />
-            </Form.Item>
-            <Form.Item
-              name="duration"
-              label="Duration"
-              rules={[{ required: true, message: "Duration is required" }]}
-              className="w-1/2"
-            >
-              <Select placeholder="Select duration">
-                <Select.Option value="1 month">1 Month</Select.Option>
-                <Select.Option value="3 months">3 Months</Select.Option>
-                <Select.Option value="6 months">6 Months</Select.Option>
-                <Select.Option value="1 year">1 Year</Select.Option>
-              </Select>
-            </Form.Item>
+                <Button
+                  className={`w-full mt-12 border ${
+                    pkg.active
+                      ? "border-primary bg-primary text-white hover:!bg-white hover:!text-primary py-5 !border-lg"
+                      : "border-white bg-white text-primary hover:!bg-primary hover:!text-white !hover:border-white py-5 !border-lg"
+                  }`}
+                  onClick={() => togglePackageStatus(pkg.id)}
+                >
+                  {pkg.active ? "Turn Off" : "Turn On"}
+                </Button>
+              </Card>
+            ))}
           </div>
+        )}
 
-          <Form.Item
-            name="features"
-            label="Features"
-            rules={[
-              { required: true, message: "At least one feature is required" },
-            ]}
-          >
-            <FeaturedInput />
-          </Form.Item>
-
-          {/* <Form.Item name="popular" valuePropName="checked" className="mb-6">
-            <div className="flex items-center">
-              <span className="mr-2">Mark as Popular:</span>
-              <Select defaultValue={false} style={{ width: 120 }}>
-                <Select.Option value={false}>No</Select.Option>
-                <Select.Option value={true}>Yes</Select.Option>
-              </Select>
-              <span className="ml-2 text-gray-500 text-sm">
-                (Displays a special ribbon)
-              </span>
-            </div>
-          </Form.Item> */}
-
-          <div className="flex justify-end gap-3 mt-6">
-            <Button
-              onClick={handleCancel}
-              size="large"
-              className="border border-primary hover:!border-primary hover:!text-primary"
-            >
+        <Modal
+          title={isEditing ? "Edit Package" : "Add Package"}
+          open={isModalOpen}
+          onCancel={handleCancel}
+          width={800}
+          footer={[
+            <Button key="cancel" onClick={handleCancel}>
               Cancel
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="bg-primary text-white rounded-lg hover:bg-[#012F60] transition-all h-auto py-2 px-6"
-              size="large"
-            >
+            </Button>,
+            <Button key="save" type="primary" onClick={() => form.submit()}>
               {isEditing ? "Update Package" : "Add Package"}
-            </Button>
-          </div>
-        </Form>
-      </Modal>
+            </Button>,
+          ]}
+          className="rounded-lg"
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            className="mb-6"
+          >
+            <Row gutter={[30, 20]}>
+              {/* Package Title */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  name="title"
+                  label="Package Title"
+                  rules={[{ required: true, message: "Title is required" }]}
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="e.g. Basic Plan"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Price */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  name="price"
+                  label="Price"
+                  rules={[{ required: true, message: "Price is required" }]}
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    type="number"
+                    prefix="$"
+                    placeholder="29.99"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Duration */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  name="duration"
+                  label="Duration"
+                  rules={[{ required: true, message: "Duration is required" }]}
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select duration"
+                    className="custom-select-ant-modal"
+                  >
+                    <Select.Option value="1 month">1 Month</Select.Option>
+                    <Select.Option value="3 months">3 Months</Select.Option>
+                    <Select.Option value="6 months">6 Months</Select.Option>
+                    <Select.Option value="1 year">1 Year</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Description */}
+              <Col xs={24}>
+                <Form.Item
+                  name="description"
+                  label="Description"
+                  rules={[
+                    { required: true, message: "Description is required" },
+                  ]}
+                  className="custom-form-item-ant"
+                >
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="Short description of what this package offers"
+                    disabled={isEditing}
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Features */}
+              <Col xs={24}>
+                <Form.Item
+                  name="features"
+                  label="Features"
+                  rules={[
+                    {
+                      required: true,
+                      message: "At least one feature is required",
+                    },
+                  ]}
+                  className="custom-form-item-ant"
+                >
+                  <FeaturedInput />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Modal>
+      </div>
     </div>
   );
 };

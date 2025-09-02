@@ -8,6 +8,8 @@ import {
   Tooltip,
   Switch,
   Select,
+  Row,
+  Col,
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
@@ -51,28 +53,18 @@ const LoginCredentials = () => {
     {
       id: 1,
       name: "Alice Johnson",
-      image: "https://i.ibb.co/8gh3mqPR/Ellipse-48-1.jpg",
       email: "example@email.com",
-      retailer: 5,
-      sales: "$300",
-      status: "Active",
-      phone: "+1234567890",
-      location: "New York",
-      businessName: "Alice's Store",
       role: "Admin",
+      phone: "+1234567890",
+      status: "Active",
     },
     {
       id: 2,
       name: "John Doe",
-      image: "https://i.ibb.co/8gh3mqPR/Ellipse-48-1.jpg",
       email: "john@email.com",
-      retailer: 3,
-      sales: "$500",
-      status: "Inactive",
-      phone: "+9876543210",
-      location: "California",
-      businessName: "John's Shop",
       role: "User",
+      phone: "+9876543210",
+      status: "Inactive",
     },
   ]);
 
@@ -111,7 +103,7 @@ const LoginCredentials = () => {
       );
       Swal.fire({
         title: "Updated!",
-        text: "Merchant details have been updated successfully.",
+        text: "User details have been updated successfully.",
         icon: "success",
         timer: 1500,
         showConfirmButton: false,
@@ -158,43 +150,27 @@ const LoginCredentials = () => {
   };
 
   const columns = [
-    { title: "SL", dataIndex: "id", key: "id", align: "center" },
-    { title: "Owner Name", dataIndex: "name", key: "name", align: "center" },
-    {
-      title: "Business Name",
-      dataIndex: "businessName",
-      key: "businessName",
-      align: "center",
-    },
+    { title: "User Name", dataIndex: "name", key: "name", align: "center" },
+    { title: "Email", dataIndex: "email", key: "email", align: "center" },
+    { title: "Role", dataIndex: "role", key: "role", align: "center" },
     {
       title: "Phone Number",
       dataIndex: "phone",
       key: "phone",
       align: "center",
     },
-    { title: "Email", dataIndex: "email", key: "email", align: "center" },
-    {
-      title: "Location",
-      dataIndex: "location",
-      key: "location",
-      align: "center",
-    },
-    { title: "Total Sales", dataIndex: "sales", key: "sales", align: "center" },
-    { title: "Role", dataIndex: "role", key: "role", align: "center" },
     { title: "Status", dataIndex: "status", key: "status", align: "center" },
     {
-      title: "Action",
+      title: "Actions",
       key: "action",
       align: "center",
+      width: 220,
       render: (_, record) => (
-        <div
-          className="flex gap-0 justify-between align-middle py-[7px] px-[15px] border border-primary rounded-md"
-          style={{ alignItems: "center" }}
-        >
+        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <Tooltip title="View & Update Details">
             <button
               onClick={() => showViewModal(record)}
-              className="text-primary hover:text-green-700 text-xl"
+              className="text-white hover:text-gray-400 text-xl"
             >
               <EditOutlined />
             </button>
@@ -216,7 +192,7 @@ const LoginCredentials = () => {
                     setData(data.filter((item) => item.id !== record.id));
                     Swal.fire({
                       title: "Deleted!",
-                      text: "Your record has been deleted.",
+                      text: "User has been deleted.",
                       icon: "success",
                     });
                   }
@@ -228,149 +204,250 @@ const LoginCredentials = () => {
             </button>
           </Tooltip>
 
-          <Switch
-            size="small"
-            checked={record.status === "Active"}
-            style={{
-              backgroundColor: record.status === "Active" ? "#3fae6a" : "gray",
-            }}
-            onChange={(checked) => {
-              Swal.fire({
-                title: "Are you sure?",
-                text: `You are about to change status to ${
-                  checked ? "Active" : "Inactive"
-                }.`,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, change it!",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  setData((prev) =>
-                    prev.map((item) =>
-                      item.id === record.id
-                        ? { ...item, status: checked ? "Active" : "Inactive" }
-                        : item
-                    )
-                  );
-                  Swal.fire({
-                    title: "Updated!",
-                    text: `Status has been changed to ${
-                      checked ? "Active" : "Inactive"
-                    }.`,
-                    icon: "success",
-                    timer: 1500,
-                    showConfirmButton: false,
-                  });
-                }
-              });
-            }}
-          />
+          <Tooltip title="Status">
+            <Switch
+              size="small"
+              checked={record.status === "Active"}
+              style={{
+                backgroundColor:
+                  record.status === "Active" ? "#3fae6a" : "gray",
+              }}
+              onChange={(checked) => {
+                Swal.fire({
+                  title: "Are you sure?",
+                  text: `You are about to change status to ${
+                    checked ? "Active" : "Inactive"
+                  }.`,
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Yes, change it!",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    setData((prev) =>
+                      prev.map((item) =>
+                        item.id === record.id
+                          ? {
+                              ...item,
+                              status: checked ? "Active" : "Inactive",
+                            }
+                          : item
+                      )
+                    );
+                    Swal.fire({
+                      title: "Updated!",
+                      text: `Status has been changed to ${
+                        checked ? "Active" : "Inactive"
+                      }.`,
+                      icon: "success",
+                      timer: 1500,
+                      showConfirmButton: false,
+                    });
+                  }
+                });
+              }}
+            />
+          </Tooltip>
         </div>
       ),
     },
   ];
 
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log("Selected row keys:", selectedRowKeys, selectedRows);
+    },
+  };
+
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-[24px] font-bold">Login Credentials</h1>
-          <p className="text-[16px] font-normal mt-2">
-            Access your account securely with your login credentials.
-          </p>
-        </div>
+      <div className="flex justify-end items-center mb-4 ">
         <div className="flex gap-5">
           <Button
             type="primary"
             onClick={() => setIsUserModalVisible(true)}
-            className="bg-primary !text-white hover:!text-secondary hover:!bg-white hover:!border-primary px-[30px] py-[25px] rounded-full text-[18px] font-bold"
+            className="bg-[#37B7C3] py-5 px-7 font-semibold text-[16px]"
           >
             Add New User
           </Button>
           <Button
             type="primary"
             onClick={() => setIsRoleModalVisible(true)}
-            className="bg-primary !text-white hover:!text-secondary hover:!bg-white hover:!border-primary px-[30px] py-[25px] rounded-full text-[18px] font-bold"
+            className="py-5 px-7 font-semibold text-[16px]"
           >
             Add New Role
           </Button>
         </div>
       </div>
 
-      <Table
-        dataSource={data}
-        columns={columns}
-        pagination={{ pageSize: 10 }}
-        bordered={false}
-        size="small"
-        rowClassName="custom-row"
-        components={components}
-        className="custom-table"
-      />
+      <div className="overflow-x-auto border rounded-lg shadow-md bg-gray-50 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+        <div className="border rounded-lg shadow-md bg-gray-50">
+          <div style={{ minWidth: "max-content" }}>
+            <Table
+              rowSelection={rowSelection}
+              columns={columns}
+              dataSource={data}
+              rowClassName={() => "hover-row"}
+              components={{
+                header: {
+                  cell: (props) => (
+                    <th
+                      {...props}
+                      style={{
+                        height: 70,
+                        lineHeight: "70px",
+                        background: "#333D49",
+                        color: "#ffffff",
+                        fontWeight: 600,
+                        padding: "0 16px",
+                      }}
+                    >
+                      {props.children}
+                    </th>
+                  ),
+                },
+                body: {
+                  cell: (props) => (
+                    <td
+                      {...props}
+                      style={{
+                        background: "#212B35",
+                        padding: "12px 16px",
+                        color: "#ffffff",
+                        borderBottom: "none",
+                      }}
+                    >
+                      {props.children}
+                    </td>
+                  ),
+                },
+              }}
+              bordered={false}
+              pagination={false}
+              size="small"
+              scroll={{ x: "max-content" }}
+              rowKey="id"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* View/Edit User Modal */}
       <Modal
-        visible={isViewModalVisible}
+        title="View User Details"
+        open={isViewModalVisible}
         onCancel={handleCloseViewModal}
-        width={700}
-        onOk={handleUpdateRecord}
-        okText="Save Changes"
+        width={800}
+        footer={[
+          <Button key="cancel" onClick={handleCloseViewModal}>
+            Cancel
+          </Button>,
+          <Button key="save" type="primary" onClick={handleUpdateRecord}>
+            Save Changes
+          </Button>,
+        ]}
       >
         {selectedRecord && (
-          <div className="flex flex-col gap-2 w-full border border-primary rounded-md p-4 mt-8 mb-8">
-            <p className="text-[22px] font-bold text-primary">
-              Login Credentials
-            </p>
-            <Form form={viewForm} layout="vertical">
-              <Form.Item name="name" label="Name">
-                <Input />
-              </Form.Item>
-              <Form.Item name="businessName" label="Business Name">
-                <Input />
-              </Form.Item>
-              <Form.Item name="email" label="Email">
-                <Input />
-              </Form.Item>
-              <Form.Item name="phone" label="Phone">
-                <Input />
-              </Form.Item>
-              <Form.Item name="location" label="Location">
-                <Input />
-              </Form.Item>
-              <Form.Item name="sales" label="Total Sales">
-                <Input />
-              </Form.Item>
-              <Form.Item name="role" label="Role">
-                <Select>
-                  {roles.map((role) => (
-                    <Option key={role} value={role}>
-                      {role}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Form>
-          </div>
+          <Form
+            form={viewForm}
+            layout="vertical"
+            initialValues={selectedRecord}
+            className="mb-6"
+          >
+            <Row gutter={[30, 20]}>
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  name="name"
+                  label="Name"
+                  className="custom-form-item-ant"
+                  rules={[{ required: true, message: "Please enter name" }]}
+                >
+                  <Input
+                    placeholder="Enter Name"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  name="email"
+                  label="Email"
+                  className="custom-form-item-ant"
+                  rules={[
+                    { required: true, message: "Please enter email" },
+                    { type: "email", message: "Enter a valid email" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Enter Email"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  name="role"
+                  label="Role"
+                  className="custom-form-item-ant-select"
+                  rules={[{ required: true, message: "Please select role" }]}
+                >
+                  <Select
+                    placeholder="Select Role"
+                    className="custom-select-ant-modal"
+                  >
+                    {roles.map((role) => (
+                      <Option key={role} value={role}>
+                        {role}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  name="phone"
+                  label="Phone Number"
+                  className="custom-form-item-ant"
+                  rules={[{ required: true, message: "Please enter phone" }]}
+                >
+                  <Input
+                    placeholder="Enter Phone Number"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
         )}
       </Modal>
 
       {/* Add New Role Modal */}
       <Modal
         title="Add New Role"
-        visible={isRoleModalVisible}
+        open={isRoleModalVisible}
         onCancel={() => setIsRoleModalVisible(false)}
-        onOk={handleAddRole}
-        okText="Add Role"
+        footer={[
+          <Button key="cancel" onClick={() => setIsRoleModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key="add" type="primary" onClick={handleAddRole}>
+            Add Role
+          </Button>,
+        ]}
+        width={500}
       >
-        <Form form={roleForm} layout="vertical">
+        <Form form={roleForm} layout="vertical" className="mb-6">
           <Form.Item
             name="roleName"
             label="Role Name"
             rules={[{ required: true, message: "Please enter role name" }]}
+            className="custom-form-item-ant"
           >
-            <Input placeholder="Enter role name" />
+            <Input
+              placeholder="Enter Role Name"
+              className="custom-input-ant-modal"
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -378,64 +455,79 @@ const LoginCredentials = () => {
       {/* Add New User Modal */}
       <Modal
         title="Add New User"
-        visible={isUserModalVisible}
+        open={isUserModalVisible}
         onCancel={() => setIsUserModalVisible(false)}
-        onOk={handleAddUser}
-        okText="Add User"
         width={700}
+        footer={[
+          <Button key="cancel" onClick={() => setIsUserModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key="add" type="primary" onClick={handleAddUser}>
+            Add User
+          </Button>,
+        ]}
       >
-        <Form form={userForm} layout="vertical">
-          <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: "Please enter name" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="businessName"
-            label="Business Name"
-            rules={[{ required: true, message: "Please enter business name" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[{ required: true, message: "Please enter email" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="phone"
-            label="Phone"
-            rules={[{ required: true, message: "Please enter phone" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="location"
-            label="Location"
-            rules={[{ required: true, message: "Please enter location" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item name="sales" label="Total Sales">
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="role"
-            label="Role"
-            rules={[{ required: true, message: "Please select a role" }]}
-          >
-            <Select placeholder="Select role">
-              {roles.map((role) => (
-                <Option key={role} value={role}>
-                  {role}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+        <Form form={userForm} layout="vertical" className="mb-6">
+          <Row gutter={[30, 20]}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="name"
+                label="Name"
+                rules={[{ required: true, message: "Please enter name" }]}
+                className="custom-form-item-ant"
+              >
+                <Input
+                  placeholder="Enter Name"
+                  className="custom-input-ant-modal"
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{ required: true, message: "Please enter email" }]}
+                className="custom-form-item-ant"
+              >
+                <Input
+                  placeholder="Enter Email"
+                  className="custom-input-ant-modal"
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="role"
+                label="Role"
+                rules={[{ required: true, message: "Please select a role" }]}
+                className="custom-form-item-ant-select"
+              >
+                <Select
+                  placeholder="Select Role"
+                  className="custom-select-ant-modal"
+                >
+                  {roles.map((role) => (
+                    <Option key={role} value={role}>
+                      {role}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="phone"
+                label="Phone Number"
+                rules={[{ required: true, message: "Please enter phone" }]}
+                className="custom-form-item-ant"
+              >
+                <Input
+                  placeholder="Enter Phone"
+                  className="custom-input-ant-modal"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </div>

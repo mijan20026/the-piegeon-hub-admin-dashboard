@@ -85,6 +85,14 @@ const router = createBrowserRouter([
         path: "/verify-breeder",
         element: <VerifyBreeder />,
       },
+      {
+        path: "/user-management",
+        element: <LoginCredentials />,
+      },
+      {
+        path: "/subscription",
+        element: <PackagesPlans />,
+      },
       // Pigeon End
       {
         path: "/customerManagement",
@@ -109,10 +117,6 @@ const router = createBrowserRouter([
       {
         path: "/auditLogs",
         element: <AuditLogs />,
-      },
-      {
-        path: "/loginCredentials",
-        element: <LoginCredentials />,
       },
       {
         path: "/reportingAnalytics",
@@ -165,10 +169,6 @@ const router = createBrowserRouter([
       {
         path: "/user",
         element: <UserManagement />,
-      },
-      {
-        path: "/subscription",
-        element: <PackagesPlans />,
       },
       {
         path: "/banner",

@@ -424,7 +424,7 @@ const MyPigeon = () => {
       <div className="flex justify-end mb-4 mt-4">
         <Button
           type="primary"
-          className="py-5 px-8"
+          className="py-5 px-7 font-semibold text-[16px]"
           onClick={() => setIsModalVisible(true)}
         >
           Add New Pigeon

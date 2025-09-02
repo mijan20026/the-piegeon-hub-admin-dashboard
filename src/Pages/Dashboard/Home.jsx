@@ -25,6 +25,8 @@ import PigeonIcon from "../../../src/assets/pigeon.png";
 import VerifyIcon from "../../../src/assets/verify.png";
 import AwardIcon from "../../../src/assets/win.png";
 import SubscriptionIcon from "../../../src/assets/subscription.png";
+import { Select } from "antd";
+const { Option } = Select;
 
 ChartJS.register(
   CategoryScale,
@@ -120,9 +122,20 @@ const Home = () => {
             <h2 className="text-secondary mt-4 text-[24px] font-bold">
               Statistics
             </h2>
-            <p className="font-medium text-[14px] py-[12px] px-[16px] border border-primary text-secondary rounded-lg">
+            {/* <p className="font-medium text-[14px] py-[12px] px-[16px] border border-primary text-secondary rounded-lg">
               Last 7 Days
-            </p>
+            </p> */}
+            <Select
+              defaultValue="7days"
+              style={{
+                width: 100,
+              }}
+              className="custom-select-ant-modal"
+            >
+              <Option value="1day">1 Day</Option>
+              <Option value="7days">7 Days</Option>
+              <Option value="1month">1 Month</Option>
+            </Select>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-auto lg:h-[240px]">

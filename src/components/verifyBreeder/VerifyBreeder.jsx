@@ -1,7 +1,19 @@
 import React, { useState } from "react";
-import { Button, Table, Input, Select, Row, Col, Modal, Form } from "antd";
+import {
+  Button,
+  Table,
+  Input,
+  Select,
+  Row,
+  Col,
+  Modal,
+  Form,
+  Tooltip,
+  Switch,
+} from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import AddVerifiedBadge from "./AddVerifiedBadge"; // Add Modal
+import { FaTrash } from "react-icons/fa";
 import GermanyFlag from "../../../src/assets/country-flag.png";
 
 const { Option } = Select;
@@ -72,17 +84,86 @@ const getColumns = (onEdit, onDelete) => [
   {
     title: "Actions",
     key: "actions",
-    width: 120,
+    width: 160,
     render: (_, record) => (
-      <div style={{ display: "flex", gap: "12px" }}>
-        <EditOutlined
-          style={{ color: "#1890ff", fontSize: "18px", cursor: "pointer" }}
-          onClick={() => onEdit(record)}
-        />
-        <DeleteOutlined
-          style={{ color: "#ff4d4f", fontSize: "18px", cursor: "pointer" }}
-          onClick={() => onDelete(record)}
-        />
+      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+        {/* Edit */}
+        <Tooltip title="View & Update Details">
+          <EditOutlined
+            className="text-white hover:text-gray-400 text-xl"
+            onClick={() => showViewModal(record)}
+          />
+        </Tooltip>
+
+        {/* Delete */}
+        <Tooltip title="Delete">
+          <FaTrash
+            style={{ color: "#ff4d4f", fontSize: "16px", cursor: "pointer" }}
+            onClick={() => {
+              Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  setData(data.filter((item) => item.id !== record.id));
+                  Swal.fire({
+                    title: "Deleted!",
+                    text: "User has been deleted.",
+                    icon: "success",
+                  });
+                }
+              });
+            }}
+          />
+        </Tooltip>
+
+        {/* Status */}
+        <Tooltip title="Status">
+          <Switch
+            size="small"
+            checked={record.status === "Active"}
+            style={{
+              backgroundColor: record.status === "Active" ? "#3fae6a" : "gray",
+            }}
+            onChange={(checked) => {
+              Swal.fire({
+                title: "Are you sure?",
+                text: `You are about to change status to ${
+                  checked ? "Active" : "Inactive"
+                }.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  setData((prev) =>
+                    prev.map((item) =>
+                      item.id === record.id
+                        ? { ...item, status: checked ? "Active" : "Inactive" }
+                        : item
+                    )
+                  );
+                  Swal.fire({
+                    title: "Updated!",
+                    text: `Status has been changed to ${
+                      checked ? "Active" : "Inactive"
+                    }.`,
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false,
+                  });
+                }
+              });
+            }}
+          />
+        </Tooltip>
       </div>
     ),
   },
@@ -120,7 +201,7 @@ const VerifyBreeder = () => {
       <div className="flex justify-end mb-4 mt-4">
         <Button
           type="primary"
-          className="py-5 px-8"
+          className="py-5 px-7 font-semibold text-[16px]"
           onClick={() => setIsAddModalVisible(true)}
         >
           Add Verified Breeder
@@ -275,8 +356,9 @@ const VerifyBreeder = () => {
       {/* Edit Modal */}
       <Modal
         title="Edit Verified Breeder"
-        visible={isEditModalVisible}
+        open={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
+        width={800}
         footer={null}
       >
         {editingData && (
@@ -284,39 +366,163 @@ const VerifyBreeder = () => {
             layout="vertical"
             initialValues={editingData}
             onFinish={handleEditSave}
+            className="mb-6"
           >
-            <Form.Item name="breederName" label="Breeder Name">
-              <Input />
-            </Form.Item>
-            <Form.Item name="pigeonScore" label="Pigeon Score">
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item name="email" label="E-mail">
-              <Input />
-            </Form.Item>
-            <Form.Item name="phoneNumber" label="Phone Number">
-              <Input />
-            </Form.Item>
-            <Form.Item name="gender" label="Gender">
-              <Select>
-                <Option value="Male">Male</Option>
-                <Option value="Female">Female</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="experienceLevel" label="Experience Level">
-              <Select>
-                <Option value="Beginner">Beginner</Option>
-                <Option value="Intermediate">Intermediate</Option>
-                <Option value="Expert">Expert</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="status" label="Status">
-              <Select>
-                <Option value="Active">Active</Option>
-                <Option value="Inactive">Inactive</Option>
-              </Select>
-            </Form.Item>
-            <div className="flex justify-end">
+            <Row gutter={[30, 20]}>
+              {/* Breeder Name */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="Breeder Name"
+                  name="breederName"
+                  rules={[
+                    { required: true, message: "Please enter breeder name" },
+                  ]}
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Breeder Name"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Pigeon Score */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="Pigeon Score"
+                  name="pigeonScore"
+                  rules={[
+                    { required: true, message: "Please enter pigeon score" },
+                  ]}
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Pigeon Score"
+                    type="number"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Country */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="Country"
+                  name="country"
+                  rules={[{ required: true, message: "Please select country" }]}
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Country"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="usa">USA</Option>
+                    <Option value="uk">UK</Option>
+                    <Option value="canada">Canada</Option>
+                    <Option value="germany">Germany</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Email */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="E-mail"
+                  name="email"
+                  rules={[
+                    { required: true, message: "Please enter email" },
+                    { type: "email", message: "Enter a valid email" },
+                  ]}
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter E-mail"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Phone Number */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="Phone Number"
+                  name="phoneNumber"
+                  rules={[
+                    { required: true, message: "Please enter phone number" },
+                  ]}
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Phone Number"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Gender */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="Gender"
+                  name="gender"
+                  rules={[{ required: true, message: "Please select gender" }]}
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Gender"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="male">Male</Option>
+                    <Option value="female">Female</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Experience Level */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="Experience Level"
+                  name="experienceLevel"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select experience level",
+                    },
+                  ]}
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Experience Level"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="beginner">Beginner</Option>
+                    <Option value="intermediate">Intermediate</Option>
+                    <Option value="expert">Expert</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Status */}
+              <Col xs={24} sm={12} md={12}>
+                <Form.Item
+                  label="Status"
+                  name="status"
+                  rules={[{ required: true, message: "Please select status" }]}
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Status"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="active">Active</Option>
+                    <Option value="inactive">Inactive</Option>
+                    <Option value="pending">Pending</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {/* Footer Buttons */}
+            <div className="flex justify-end mt-4">
               <Button
                 onClick={() => setIsEditModalVisible(false)}
                 style={{ marginRight: 8 }}
