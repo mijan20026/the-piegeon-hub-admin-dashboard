@@ -115,88 +115,98 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       ),
     },
     // Pigeon Hub End
+    // {
+    //   key: "/merchantManagement",
+    //   icon: renderIcon(Marchant, "/merchantManagement"),
+    //   label: (
+    //     <Link to="/merchantManagement">
+    //       {collapsed ? "" : "Merchant Management"}
+    //     </Link>
+    //   ),
+    // },
+    // {
+    //   key: "/customerManagement",
+    //   icon: renderIcon(People, "/customerManagement"),
+    //   label: (
+    //     <Link to="/customerManagement">
+    //       {collapsed ? "" : "Customer Management"}
+    //     </Link>
+    //   ),
+    // },
+    // {
+    //   key: "/tierSystem",
+    //   icon: renderIcon(People, "/tierSystem"),
+    //   label: (
+    //     <Link to="/tierSystem">{collapsed ? "" : "Point & Tier System"}</Link>
+    //   ),
+    // },
+    // {
+    //   key: "/promotionManagement",
+    //   icon: renderIcon(PromotionManagement, "/promotionManagement"),
+    //   label: (
+    //     <Link to="/promotionManagement">
+    //       {collapsed ? "" : "Promotion Management"}
+    //     </Link>
+    //   ),
+    // },
+    // {
+    //   key: "/salesRepPortal",
+    //   icon: renderIcon(SalesRep, "/salesRepPortal"),
+    //   label: (
+    //     <Link to="/salesRepPortal">{collapsed ? "" : "Sales Rep Portal"}</Link>
+    //   ),
+    // },
+    // {
+    //   key: "/auditLogs",
+    //   icon: renderIcon(AuditLog, "/auditLogs"),
+    //   label: <Link to="/auditLogs">{collapsed ? "" : "Audit Logs"}</Link>,
+    // },
+    // {
+    //   key: "/pushNotification",
+    //   icon: renderIcon(loginCredentials, "/pushNotification"),
+    //   label: (
+    //     <Link to="/pushNotification">
+    //       {collapsed ? "" : "Push Notifications"}
+    //     </Link>
+    //   ),
+    // },
     {
-      key: "/merchantManagement",
-      icon: renderIcon(Marchant, "/merchantManagement"),
-      label: (
-        <Link to="/merchantManagement">
-          {collapsed ? "" : "Merchant Management"}
-        </Link>
-      ),
+      key: "/settings",
+      icon: renderIcon(Settings, "/settings"),
+      label: <Link to="/settings">{collapsed ? "" : "Settings"}</Link>,
     },
-    {
-      key: "/customerManagement",
-      icon: renderIcon(People, "/customerManagement"),
-      label: (
-        <Link to="/customerManagement">
-          {collapsed ? "" : "Customer Management"}
-        </Link>
-      ),
-    },
-    {
-      key: "/tierSystem",
-      icon: renderIcon(People, "/tierSystem"),
-      label: (
-        <Link to="/tierSystem">{collapsed ? "" : "Point & Tier System"}</Link>
-      ),
-    },
-    {
-      key: "/promotionManagement",
-      icon: renderIcon(PromotionManagement, "/promotionManagement"),
-      label: (
-        <Link to="/promotionManagement">
-          {collapsed ? "" : "Promotion Management"}
-        </Link>
-      ),
-    },
-    {
-      key: "/salesRepPortal",
-      icon: renderIcon(SalesRep, "/salesRepPortal"),
-      label: (
-        <Link to="/salesRepPortal">{collapsed ? "" : "Sales Rep Portal"}</Link>
-      ),
-    },
-    {
-      key: "/auditLogs",
-      icon: renderIcon(AuditLog, "/auditLogs"),
-      label: <Link to="/auditLogs">{collapsed ? "" : "Audit Logs"}</Link>,
-    },
-    {
-      key: "/pushNotification",
-      icon: renderIcon(loginCredentials, "/pushNotification"),
-      label: (
-        <Link to="/pushNotification">
-          {collapsed ? "" : "Push Notifications"}
-        </Link>
-      ),
-    },
-    {
-      key: "subMenuSetting",
-      icon: renderIcon(Settings, "subMenuSetting"),
-      label: collapsed ? "" : "Settings",
-      children: [
-        {
-          key: "/profile",
-          label: <Link to="/profile">{collapsed ? "" : "Update Profile"}</Link>,
-        },
-        {
-          key: "/terms-and-conditions",
-          label: (
-            <Link to="/terms-and-conditions">
-              {collapsed ? "" : "Terms And Condition"}
-            </Link>
-          ),
-        },
-        {
-          key: "/privacy-policy",
-          label: (
-            <Link to="/privacy-policy">
-              {collapsed ? "" : "Privacy Policy"}
-            </Link>
-          ),
-        },
-      ],
-    },
+    // {
+    //   key: "/profile",
+    //   icon: renderIcon(Settings, "/pushNotification"),
+    //   label: <Link to="/profile">{collapsed ? "" : "Settings"}</Link>,
+    // },
+    // {
+    //   key: "subMenuSetting",
+    //   icon: renderIcon(Settings, "subMenuSetting"),
+    //   label: collapsed ? "" : "Settings",
+    //   children: [
+    //     {
+    //       key: "/profile",
+    //       label: <Link to="/profile">{collapsed ? "" : "Update Profile"}</Link>,
+    //     },
+    //     {
+    //       key: "/terms-and-conditions",
+    //       label: (
+    //         <Link to="/terms-and-conditions">
+    //           {collapsed ? "" : "Terms And Condition"}
+    //         </Link>
+    //       ),
+    //     },
+    //     {
+    //       key: "/privacy-policy",
+    //       label: (
+    //         <Link to="/privacy-policy">
+    //           {collapsed ? "" : "Privacy Policy"}
+    //         </Link>
+    //       ),
+    //     },
+    //   ],
+    // },
     {
       key: "/logout",
       icon: <IoIosLogOut size={24} />,

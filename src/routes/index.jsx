@@ -53,6 +53,7 @@ import { Navigate } from "react-router-dom";
 import MyPigeon from "../components/myPigeon/MyPigeon";
 import PigeonManagement from "../components/pigeonManagement/PigeonManagement";
 import VerifyBreeder from "../components/verifyBreeder/VerifyBreeder";
+import { Profiler } from "react";
 
 const router = createBrowserRouter([
   {
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       {
         path: "/reportingAnalytics",
         element: <ReportingAnalytics />,
+      },
+      {
+        path: "/settings",
+        element: <AdminProfile />,
       },
       // Pigeon End
       {
