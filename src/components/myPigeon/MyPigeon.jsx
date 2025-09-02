@@ -85,18 +85,19 @@ const getColumns = () => [
     key: "country",
     render: (country) => {
       if (!country) return <span>-</span>; // fallback if no country
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          {country.icon && (
-            <img
-              src={country.icon}
-              alt={country.name}
-              style={{ width: 20, height: 20, borderRadius: "50%" }}
-            />
-          )}
-          <span>{country.name}</span>
-        </div>
-      );
+      return <span>{country.name}</span>; // removed the <img> for the icon
+      // return (
+      //   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+      //     {country.icon && (
+      //       <img
+      //         src={country.icon}
+      //         alt={country.name}
+      //         style={{ width: 20, height: 20, borderRadius: "50%" }}
+      //       />
+      //     )}
+      //     <span>{country.name}</span>
+      //   </div>
+      // );
     },
   },
 

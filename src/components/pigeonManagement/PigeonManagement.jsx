@@ -106,25 +106,31 @@ const getColumns = () => [
     key: "iconicScore",
     render: (text) => text || "-",
   },
+  // {
+  //   title: "Country",
+  //   dataIndex: "country",
+  //   key: "country",
+  //   render: (country) =>
+  //     country ? (
+  //       <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+  //         {country.icon && (
+  //           <img
+  //             src={country.icon}
+  //             alt={country.name}
+  //             style={{ width: 20, height: 20, borderRadius: "50%" }}
+  //           />
+  //         )}
+  //         <span>{country.name || "-"}</span>
+  //       </div>
+  //     ) : (
+  //       "-"
+  //     ),
+  // },
   {
     title: "Country",
     dataIndex: "country",
     key: "country",
-    render: (country) =>
-      country ? (
-        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          {country.icon && (
-            <img
-              src={country.icon}
-              alt={country.name}
-              style={{ width: 20, height: 20, borderRadius: "50%" }}
-            />
-          )}
-          <span>{country.name || "-"}</span>
-        </div>
-      ) : (
-        "-"
-      ),
+    render: (country) => (country ? <span>{country.name || "-"}</span> : "-"),
   },
   {
     title: "Pigeon ID",

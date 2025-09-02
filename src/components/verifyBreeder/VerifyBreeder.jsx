@@ -24,7 +24,7 @@ const initialData = [
     key: "1",
     breederName: "Breeder A",
     pigeonScore: 95,
-    country: { name: "USA", icon: GermanyFlag },
+    country: "USA", // string, not object
     email: "breederA@example.com",
     phoneNumber: "+1 123-456-7890",
     gender: "Male",
@@ -35,7 +35,7 @@ const initialData = [
     key: "2",
     breederName: "Breeder B",
     pigeonScore: 88,
-    country: { name: "UK", icon: GermanyFlag },
+    country: "UK",
     email: "breederB@example.com",
     phoneNumber: "+44 789-456-1230",
     gender: "Female",
@@ -46,7 +46,7 @@ const initialData = [
     key: "3",
     breederName: "Breeder C",
     pigeonScore: 99,
-    country: { name: "Canada", icon: GermanyFlag },
+    country: "Canada",
     email: "breederC@example.com",
     phoneNumber: "+1 555-987-6543",
     gender: "Male",
@@ -77,11 +77,7 @@ const VerifyBreeder = () => {
     setData((prev) =>
       prev.map((item) =>
         item.key === editingData.key
-          ? {
-              ...editingData,
-              ...values,
-              country: { ...editingData.country, name: values.country },
-            }
+          ? { ...editingData, ...values } // country stays string
           : item
       )
     );
@@ -145,21 +141,28 @@ const VerifyBreeder = () => {
   const getColumns = () => [
     { title: "Breeder Name", dataIndex: "breederName", key: "breederName" },
     { title: "Pigeon Score", dataIndex: "pigeonScore", key: "pigeonScore" },
+    // {
+    //   title: "Country",
+    //   dataIndex: "country",
+    //   key: "country",
+    //   render: (country) => (
+    //     <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+    //       <img
+    //         src={country.icon}
+    //         alt={country.name}
+    //         style={{ width: 20, height: 20, borderRadius: "50%" }}
+    //       />
+    //       <span>{country.name}</span>
+    //     </div>
+    //   ),
+    // },
     {
       title: "Country",
       dataIndex: "country",
       key: "country",
-      render: (country) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          <img
-            src={country.icon}
-            alt={country.name}
-            style={{ width: 20, height: 20, borderRadius: "50%" }}
-          />
-          <span>{country.name}</span>
-        </div>
-      ),
+      render: (country) => country || "-",
     },
+
     { title: "E-mail", dataIndex: "email", key: "email" },
     { title: "Phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
     { title: "Gender", dataIndex: "gender", key: "gender" },
@@ -423,7 +426,7 @@ const VerifyBreeder = () => {
             layout="vertical"
             initialValues={{
               ...editingData,
-              country: editingData.country.name,
+              country: editingData.country, // ✅ just string
               gender: editingData.gender,
               experienceLevel: editingData.experienceLevel,
               status: editingData.status,

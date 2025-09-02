@@ -29,7 +29,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
         const formattedValues = {
           image, // ✅ pass image to table
           name: values.name || "-",
-          country: values.country || { name: "-", icon: null },
+          country: { name: values.country, icon: null },
           breeder: values.breeder || "-",
           ringNumber: values.ringNumber || "-",
           birthYear: values.birthYear || "-",
@@ -93,6 +93,27 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 placeholder="Enter Name"
                 className="custom-input-ant-modal"
               />
+            </Form.Item>
+          </Col>
+
+          {/* Country */}
+          {/* Country */}
+          <Col xs={24} sm={12} md={8}>
+            <Form.Item
+              label="Country"
+              name="country"
+              rules={[{ required: true, message: "Please select country" }]}
+              className="custom-form-item-ant-select"
+            >
+              <Select
+                placeholder="Select Country"
+                className="custom-select-ant-modal"
+              >
+                <Option value="USA">USA</Option>
+                <Option value="UK">UK</Option>
+                <Option value="Canada">Canada</Option>
+                <Option value="Germany">Germany</Option>
+              </Select>
             </Form.Item>
           </Col>
 
