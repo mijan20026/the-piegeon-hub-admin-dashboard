@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import { Button, Table, Input, Select, Row, Col, Tabs } from "antd";
+import React, { useState, useMemo } from "react";
+import { Button, Table, Input, Select, Row, Col } from "antd";
 import PigeonImage from "../../../src/assets/pigeon-image.png";
 import VerifyIcon from "../../../src/assets/verify.png";
-// import AddNewPigeon from "./AddNewPigeon"; // import modal
 import GermanyFlag from "../../../src/assets/country-flag.png";
 
 const { Option } = Select;
-const { TabPane } = Tabs;
 
-const dataSource = [
+const initialData = [
   {
     key: "1",
     image: PigeonImage,
@@ -25,6 +23,7 @@ const dataSource = [
     gender: "Male",
     status: "Active",
     icon: VerifyIcon,
+    color: "Red",
   },
   {
     key: "2",
@@ -41,7 +40,8 @@ const dataSource = [
     mother: "Mother B",
     gender: "Female",
     status: "Inactive",
-    icon: VerifyIcon,
+    icon: "-",
+    color: "Blue",
   },
   {
     key: "3",
@@ -59,6 +59,7 @@ const dataSource = [
     gender: "Male",
     status: "Active",
     icon: VerifyIcon,
+    color: "Green",
   },
 ];
 
@@ -70,7 +71,7 @@ const getColumns = () => [
     width: 100,
     render: (src) => (
       <img
-        src={src}
+        src={src || PigeonImage}
         alt="pigeon"
         style={{
           width: 50,
@@ -81,50 +82,152 @@ const getColumns = () => [
       />
     ),
   },
-  { title: "Name", dataIndex: "name", key: "name" },
-  { title: "Verified", dataIndex: "verified", key: "verified" },
-  { title: "Iconic", dataIndex: "iconic", key: "iconic" },
-  { title: "Iconic Score", dataIndex: "iconicScore", key: "iconicScore" },
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Verified",
+    dataIndex: "verified",
+    key: "verified",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Iconic",
+    dataIndex: "iconic",
+    key: "iconic",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Iconic Score",
+    dataIndex: "iconicScore",
+    key: "iconicScore",
+    render: (text) => text || "-",
+  },
   {
     title: "Country",
     dataIndex: "country",
     key: "country",
-    render: (country) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-        <img
-          src={country.icon}
-          alt={country.name}
-          style={{ width: 20, height: 20, borderRadius: "50%" }}
-        />
-        <span>{country.name}</span>
-      </div>
-    ),
+    render: (country) =>
+      country ? (
+        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+          {country.icon && (
+            <img
+              src={country.icon}
+              alt={country.name}
+              style={{ width: 20, height: 20, borderRadius: "50%" }}
+            />
+          )}
+          <span>{country.name || "-"}</span>
+        </div>
+      ) : (
+        "-"
+      ),
   },
-  { title: "Pigeon ID", dataIndex: "pigeonId", key: "pigeonId" },
-  { title: "Ring Number", dataIndex: "ringNumber", key: "ringNumber" },
-  { title: "Birth Year", dataIndex: "birthYear", key: "birthYear" },
-  { title: "Father", dataIndex: "father", key: "father" },
-  { title: "Mother", dataIndex: "mother", key: "mother" },
-  { title: "Gender", dataIndex: "gender", key: "gender" },
-  { title: "Status", dataIndex: "status", key: "status" },
+  {
+    title: "Pigeon ID",
+    dataIndex: "pigeonId",
+    key: "pigeonId",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Ring Number",
+    dataIndex: "ringNumber",
+    key: "ringNumber",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Birth Year",
+    dataIndex: "birthYear",
+    key: "birthYear",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Father",
+    dataIndex: "father",
+    key: "father",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Mother",
+    dataIndex: "mother",
+    key: "mother",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Gender",
+    dataIndex: "gender",
+    key: "gender",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (text) => text || "-",
+  },
+  {
+    title: "Color",
+    dataIndex: "color",
+    key: "color",
+    render: (text) => text || "-",
+  },
   {
     title: "Icon",
     dataIndex: "icon",
     key: "icon",
     width: 80,
-    render: (src) => (
-      <img
-        src={src}
-        alt="verify"
-        style={{ width: 24, height: 24, objectFit: "cover" }}
-      />
-    ),
+    render: (src) =>
+      src && src !== "-" ? (
+        <img
+          src={src}
+          alt="verify"
+          style={{ width: 24, height: 24, objectFit: "cover" }}
+        />
+      ) : (
+        "-"
+      ),
   },
 ];
 
 const PigeonManagement = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const columns = getColumns();
+  const [data, setData] = useState(initialData);
+  const [search, setSearch] = useState("");
+  const [filterCountry, setFilterCountry] = useState("all");
+  const [filterGender, setFilterGender] = useState("all");
+  const [filterColor, setFilterColor] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+
+  const filteredData = useMemo(() => {
+    return data.filter((item) => {
+      const matchesSearch =
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.ringNumber.toLowerCase().includes(search.toLowerCase());
+
+      const matchesCountry =
+        filterCountry === "all" ||
+        item.country.name.toLowerCase() === filterCountry;
+      const matchesGender =
+        filterGender === "all" || item.gender.toLowerCase() === filterGender;
+      const matchesColor =
+        filterColor === "all" || item.color.toLowerCase() === filterColor;
+      const matchesStatus =
+        filterStatus === "all" ||
+        (filterStatus === "verified"
+          ? item.verified === "Yes"
+          : item.verified === "No");
+
+      return (
+        matchesSearch &&
+        matchesCountry &&
+        matchesGender &&
+        matchesColor &&
+        matchesStatus
+      );
+    });
+  }, [data, search, filterCountry, filterGender, filterColor, filterStatus]);
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -137,15 +240,17 @@ const PigeonManagement = () => {
       {/* Tabs and Filters */}
       <div className="bg-[#333D49] rounded-lg shadow-lg border border-gray-200 mb-2 mt-6">
         <Row gutter={[16, 16]} className="flex flex-wrap px-4 mb-4 mt-4">
-          {/* Search Bar */}
           <Col xs={24} sm={12} md={6} lg={5}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Search</label>
-              <Input placeholder="Search..." className="custom-input-ant" />
+              <Input
+                placeholder="Search..."
+                className="custom-input-ant"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
           </Col>
-
-          {/* Country Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Country</label>
@@ -153,6 +258,8 @@ const PigeonManagement = () => {
                 placeholder="Select Country"
                 className="custom-select-ant"
                 style={{ width: "100%" }}
+                value={filterCountry}
+                onChange={(val) => setFilterCountry(val)}
               >
                 <Option value="all">All</Option>
                 <Option value="usa">USA</Option>
@@ -162,8 +269,6 @@ const PigeonManagement = () => {
               </Select>
             </div>
           </Col>
-
-          {/* Gender Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Gender</label>
@@ -171,6 +276,8 @@ const PigeonManagement = () => {
                 placeholder="Select Gender"
                 className="custom-select-ant"
                 style={{ width: "100%" }}
+                value={filterGender}
+                onChange={(val) => setFilterGender(val)}
               >
                 <Option value="all">All</Option>
                 <Option value="male">Male</Option>
@@ -178,8 +285,6 @@ const PigeonManagement = () => {
               </Select>
             </div>
           </Col>
-
-          {/* Color Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Color</label>
@@ -187,6 +292,8 @@ const PigeonManagement = () => {
                 placeholder="Select Color"
                 className="custom-select-ant"
                 style={{ width: "100%" }}
+                value={filterColor}
+                onChange={(val) => setFilterColor(val)}
               >
                 <Option value="all">All</Option>
                 <Option value="red">Red</Option>
@@ -196,8 +303,6 @@ const PigeonManagement = () => {
               </Select>
             </div>
           </Col>
-
-          {/* Status Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Status</label>
@@ -205,6 +310,8 @@ const PigeonManagement = () => {
                 placeholder="Select Status"
                 className="custom-select-ant"
                 style={{ width: "100%" }}
+                value={filterStatus}
+                onChange={(val) => setFilterStatus(val)}
               >
                 <Option value="all">All</Option>
                 <Option value="verified">Verified</Option>
@@ -221,8 +328,8 @@ const PigeonManagement = () => {
           <div style={{ minWidth: "max-content" }}>
             <Table
               rowSelection={rowSelection}
-              columns={columns}
-              dataSource={dataSource}
+              columns={getColumns()}
+              dataSource={filteredData}
               rowClassName={() => "hover-row"}
               components={{
                 header: {
