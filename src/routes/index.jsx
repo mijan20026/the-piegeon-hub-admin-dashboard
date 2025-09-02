@@ -93,6 +93,10 @@ const router = createBrowserRouter([
         path: "/subscription",
         element: <PackagesPlans />,
       },
+      {
+        path: "/reportingAnalytics",
+        element: <ReportingAnalytics />,
+      },
       // Pigeon End
       {
         path: "/customerManagement",

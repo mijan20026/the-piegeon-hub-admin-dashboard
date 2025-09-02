@@ -321,6 +321,38 @@ select {
   box-shadow: none !important; /* remove blue focus shadow */
 }
 
+/* Select White bg*/
+/* Base Select styling */
+.custom-select-ant-white .ant-select-selector {
+  padding: 8px 12px !important; /* inner padding */
+  background: transparent !important; /* transparent background */
+  height: 40px !important; /* fixed height */
+  line-height: 40px !important; /* vertically center text */
+  border: 1px solid #088395 !important; /* border color */
+  box-shadow: none !important; /* remove default shadow */
+}
+
+/* Selected text & placeholder color */
+.custom-select-ant-white .ant-select-selection-item,
+.custom-select-ant-white .ant-select-selection-item span,
+.custom-select-ant-white .ant-select-selection-placeholder {
+  color: #18191b !important;
+}
+
+/* Arrow icon styling */
+.custom-select-ant-white .ant-select-arrow {
+  top: 60% !important; /* vertically center arrow */
+  transform: translateY(-50%) !important;
+  margin-top: 0 !important;
+  color: #18191b !important;
+}
+
+/* Remove focus styles */
+.custom-select-ant-white.ant-select-focused .ant-select-selector {
+  border-color: #ffffff !important; /* keep same border on focus */
+  box-shadow: none !important; /* remove blue focus shadow */
+}
+
 /* Search bar */
 .custom-input-ant {
   padding: 8px 12px !important; /* inner padding */

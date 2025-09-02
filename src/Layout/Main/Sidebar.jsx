@@ -105,6 +105,15 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         </Link>
       ),
     },
+    {
+      key: "/reportingAnalytics",
+      icon: renderIcon(Rewords, "/reportingAnalytics"),
+      label: (
+        <Link to="/reportingAnalytics">
+          {collapsed ? "" : "Analytics & Reports"}
+        </Link>
+      ),
+    },
     // Pigeon Hub End
     {
       key: "/merchantManagement",
@@ -129,15 +138,6 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       icon: renderIcon(People, "/tierSystem"),
       label: (
         <Link to="/tierSystem">{collapsed ? "" : "Point & Tier System"}</Link>
-      ),
-    },
-    {
-      key: "/reportingAnalytics",
-      icon: renderIcon(Rewords, "/reportingAnalytics"),
-      label: (
-        <Link to="/reportingAnalytics">
-          {collapsed ? "" : "Reporting & Analytics"}
-        </Link>
       ),
     },
     {
