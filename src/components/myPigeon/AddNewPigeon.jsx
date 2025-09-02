@@ -1,9 +1,19 @@
 import React from "react";
-import { Modal, Form, Input, Select, Row, Col, Button } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  Row,
+  Col,
+  Button,
+  Upload,
+  message,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import VerifyIcon from "../../../src/assets/verify.png";
 
 const { Option } = Select;
-import { Upload, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 
 const AddNewPigeon = ({ visible, onCancel, onSave }) => {
   const [form] = Form.useForm();
@@ -12,7 +22,28 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
     form
       .validateFields()
       .then((values) => {
-        onSave(values);
+        const photos = values.photos || [];
+        const image =
+          photos.length > 0 ? photos[0].thumbUrl || photos[0].url : null;
+
+        const formattedValues = {
+          image, // ✅ pass image to table
+          name: values.name || "-",
+          country: values.country || { name: "-", icon: null },
+          breeder: values.breeder || "-",
+          ringNumber: values.ringNumber || "-",
+          birthYear: values.birthYear || "-",
+          father: values.fatherRingNumber || "-",
+          mother: values.motherRingNumber || "-",
+          gender: values.gender || "-",
+          color: values.color || "-",
+          status: values.status || "Inactive",
+          verified: values.verification === "verified" ? "Yes" : "No",
+          icon: values.verification === "verified" ? VerifyIcon : "-", // show icon only if verified
+          additionalNotes: values.additionalNotes || "-",
+        };
+
+        onSave(formattedValues);
         form.resetFields();
       })
       .catch((info) => console.log("Validate Failed:", info));
@@ -35,6 +66,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
     >
       <Form form={form} layout="vertical" className="mb-6">
         <Row gutter={[30, 20]}>
+          {/* Ring Number */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Ring Number"
@@ -48,6 +80,8 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
               />
             </Form.Item>
           </Col>
+
+          {/* Name */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Name"
@@ -57,10 +91,12 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             >
               <Input
                 placeholder="Enter Name"
-                className="custom-input-ant-modal" // <-- apply directly here
+                className="custom-input-ant-modal"
               />
             </Form.Item>
           </Col>
+
+          {/* Category */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Choose a Category"
@@ -81,6 +117,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Birth Year */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Birth Year"
@@ -93,6 +130,8 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
               />
             </Form.Item>
           </Col>
+
+          {/* Story */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Your Story"
@@ -105,6 +144,8 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
               />
             </Form.Item>
           </Col>
+
+          {/* Color */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Color"
@@ -115,14 +156,15 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 placeholder="Select Color"
                 className="custom-select-ant-modal"
               >
-                <Option value="red">Red</Option>
-                <Option value="blue">Blue</Option>
-                <Option value="green">Green</Option>
-                <Option value="yellow">Yellow</Option>
+                <Option value="Red">Red</Option>
+                <Option value="Blue">Blue</Option>
+                <Option value="Green">Green</Option>
+                <Option value="Yellow">Yellow</Option>
               </Select>
             </Form.Item>
           </Col>
 
+          {/* Pattern */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Pattern"
@@ -138,6 +180,8 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
               </Select>
             </Form.Item>
           </Col>
+
+          {/* Gender */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Gender"
@@ -148,12 +192,13 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 placeholder="Select Gender"
                 className="custom-select-ant-modal"
               >
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
+                <Option value="Male">Male</Option>
+                <Option value="Female">Female</Option>
               </Select>
             </Form.Item>
           </Col>
 
+          {/* Breeder */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Breeder"
@@ -164,12 +209,13 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 placeholder="Select Breeder"
                 className="custom-select-ant-modal"
               >
-                <Option value="breederA">Breeder A</Option>
-                <Option value="breederB">Breeder B</Option>
+                <Option value="Breeder A">Breeder A</Option>
+                <Option value="Breeder B">Breeder B</Option>
               </Select>
             </Form.Item>
           </Col>
 
+          {/* Breeder Rating */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Breeder Rating"
@@ -189,6 +235,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Status */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Status"
@@ -199,13 +246,14 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 placeholder="Select Status"
                 className="custom-select-ant-modal"
               >
-                <Option value="active">Active</Option>
-                <Option value="inactive">Inactive</Option>
-                <Option value="pending">Pending</Option>
+                <Option value="Active">Active</Option>
+                <Option value="Inactive">Inactive</Option>
+                <Option value="Pending">Pending</Option>
               </Select>
             </Form.Item>
           </Col>
 
+          {/* Location */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Location"
@@ -219,6 +267,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Racing Rating */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Racing Rating"
@@ -238,6 +287,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Verification */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Verification"
@@ -254,6 +304,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Iconic */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Iconic"
@@ -270,6 +321,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Iconic Score */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Iconic Score"
@@ -283,6 +335,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Father */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Father Ring Number"
@@ -296,6 +349,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
             </Form.Item>
           </Col>
 
+          {/* Mother */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Mother Ring Number"
@@ -308,14 +362,23 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
               />
             </Form.Item>
           </Col>
+
+          {/* Upload Photos */}
           <Col xs={24} sm={12} md={12}>
-            <Form.Item label="Pigeon Photos" name="photos">
+            <Form.Item
+              label="Pigeon Photos"
+              name="photos"
+              valuePropName="fileList"
+              getValueFromEvent={(e) =>
+                Array.isArray(e) ? e : e && e.fileList
+              }
+            >
               <Upload
                 name="files"
                 listType="picture-card"
                 multiple
                 className="border rounded-lg p-3 border-[#071952]"
-                maxCount={5} // optional: limit number of uploads
+                maxCount={5}
                 showUploadList={{
                   showPreviewIcon: true,
                   showRemoveIcon: true,
@@ -326,12 +389,9 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                   if (!isJpgOrPng) {
                     message.error("You can only upload JPG/PNG files!");
                   }
-                  return isJpgOrPng || Upload.LIST_IGNORE; // ignore non-JPG/PNG files
+                  return false; // ✅ Prevent auto upload, just store locally
                 }}
-                accept=".jpg,.jpeg,.png" // only allow these extensions in file picker
-                onChange={({ fileList }) => {
-                  console.log(fileList); // store selected files if needed
-                }}
+                accept=".jpg,.jpeg,.png"
               >
                 <div
                   style={{
@@ -349,11 +409,13 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
               </Upload>
             </Form.Item>
           </Col>
+
+          {/* Notes */}
           <Col xs={24} sm={12} md={12}>
             <Form.Item label="Pigeon Result" name="additionalNotes">
               <Input.TextArea
                 placeholder="Enter any additional notes"
-                autoSize={{ minRows: 5, maxRows: 8 }} // auto-expand from 4 up to 8 rows
+                autoSize={{ minRows: 5, maxRows: 8 }}
                 className="custom-input-ant-modal"
               />
             </Form.Item>
