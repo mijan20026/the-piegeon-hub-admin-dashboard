@@ -1,63 +1,11 @@
-import React, { useState } from "react";
-import { Button, Table, Input, Select, Row, Col, Tabs } from "antd";
-import PigeonImage from "../../../src/assets/pigeon-image.png";
-import VerifyIcon from "../../../src/assets/verify.png";
-import AddNewPigeon from "./AddNewPigeon"; // import modal
-import GermanyFlag from "../../../src/assets/country-flag.png";
+// src/pages/MyPigeon.jsx
+import React, { useMemo, useState } from "react";
+import { Button, Table, Input, Select, Row, Col, Tabs, Spin } from "antd";
+import AddNewPigeon from "./AddNewPigeon";
+import { useGetMyPigeonsQuery } from "../../redux/apiSlices/mypigeonSlice";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
-
-const initialData = [
-  {
-    key: "1",
-    image: PigeonImage,
-    name: "Pigeon 1",
-    country: { name: "USA", icon: GermanyFlag },
-    breeder: "Breeder A",
-    ringNumber: "R1234",
-    birthYear: 2020,
-    father: "Father A",
-    mother: "Mother A",
-    gender: "Male",
-    color: "Red",
-    status: "Active",
-    verified: "Yes",
-    icon: VerifyIcon,
-  },
-  {
-    key: "2",
-    image: PigeonImage,
-    name: "Pigeon 2",
-    country: { name: "UK", icon: GermanyFlag },
-    breeder: "Breeder B",
-    ringNumber: "R1235",
-    birthYear: 2021,
-    father: "Father B",
-    mother: "Mother B",
-    gender: "Female",
-    color: "Blue",
-    status: "Inactive",
-    verified: "No",
-    icon: VerifyIcon,
-  },
-  {
-    key: "3",
-    image: PigeonImage,
-    name: "Pigeon 3",
-    country: { name: "Canada", icon: GermanyFlag },
-    breeder: "Breeder C",
-    ringNumber: "R1236",
-    birthYear: 2019,
-    father: "Father C",
-    mother: "Mother C",
-    gender: "Male",
-    color: "Green",
-    status: "Active",
-    verified: "Yes",
-    icon: VerifyIcon,
-  },
-];
 
 const getColumns = () => [
   {
@@ -65,18 +13,21 @@ const getColumns = () => [
     dataIndex: "image",
     key: "image",
     width: 100,
-    render: (src) => (
-      <img
-        src={src}
-        alt="pigeon"
-        style={{
-          width: 50,
-          height: 50,
-          borderRadius: "50%",
-          objectFit: "cover",
-        }}
-      />
-    ),
+    render: (src) =>
+      src ? (
+        <img
+          src={src}
+          alt="pigeon"
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
+        <span>-</span>
+      ),
   },
   { title: "Name", dataIndex: "name", key: "name" },
   {
@@ -84,23 +35,10 @@ const getColumns = () => [
     dataIndex: "country",
     key: "country",
     render: (country) => {
-      if (!country) return <span>-</span>; // fallback if no country
-      return <span>{country.name}</span>; // removed the <img> for the icon
-      // return (
-      //   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-      //     {country.icon && (
-      //       <img
-      //         src={country.icon}
-      //         alt={country.name}
-      //         style={{ width: 20, height: 20, borderRadius: "50%" }}
-      //       />
-      //     )}
-      //     <span>{country.name}</span>
-      //   </div>
-      // );
+      if (!country) return <span>-</span>;
+      return <span>{country.name}</span>;
     },
   },
-
   { title: "Breeder", dataIndex: "breeder", key: "breeder" },
   { title: "Ring Number", dataIndex: "ringNumber", key: "ringNumber" },
   { title: "Birth Year", dataIndex: "birthYear", key: "birthYear" },
@@ -130,7 +68,6 @@ const getColumns = () => [
 
 const MyPigeon = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [data, setData] = useState(initialData);
   const [filters, setFilters] = useState({
     search: "",
     country: "all",
@@ -139,43 +76,64 @@ const MyPigeon = () => {
     status: "all",
   });
 
+  // pagination state (client-side, after filtering)
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // fetch ALL pigeons (big limit) so filtering applies across entire dataset
+  const { data, isLoading } = useGetMyPigeonsQuery({ page: 1, limit: 1000 });
+  const pigeons = data?.pigeons || [];
+
   const columns = getColumns();
 
-  // Handle filters
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1); // reset to first page when filters change
   };
 
-  const filteredData = data.filter((item) => {
-    const matchesSearch =
-      filters.search === "" ||
-      item.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-      item.breeder.toLowerCase().includes(filters.search.toLowerCase()) ||
-      item.ringNumber.toLowerCase().includes(filters.search.toLowerCase());
+  // filter across the full dataset
+  const filteredData = useMemo(() => {
+    return pigeons.filter((item) => {
+      const search = filters.search.trim().toLowerCase();
 
-    const matchesCountry =
-      filters.country === "all" ||
-      item.country.name.toLowerCase() === filters.country;
+      const matchesSearch =
+        search === "" ||
+        item.name?.toLowerCase().includes(search) ||
+        item.breeder?.toLowerCase().includes(search) ||
+        item.ringNumber?.toLowerCase().includes(search);
 
-    const matchesGender =
-      filters.gender === "all" || item.gender.toLowerCase() === filters.gender;
+      const matchesCountry =
+        filters.country === "all" ||
+        item.country?.name?.toLowerCase() === filters.country;
 
-    const matchesColor =
-      filters.color === "all" || item.color.toLowerCase() === filters.color;
+      const matchesGender =
+        filters.gender === "all" ||
+        item.gender?.toLowerCase() === filters.gender;
 
-    const matchesStatus =
-      filters.status === "all" ||
-      (filters.status === "verified" && item.verified === "Yes") ||
-      (filters.status === "notverified" && item.verified === "No");
+      const matchesColor =
+        filters.color === "all" || item.color?.toLowerCase() === filters.color;
 
-    return (
-      matchesSearch &&
-      matchesCountry &&
-      matchesGender &&
-      matchesColor &&
-      matchesStatus
-    );
-  });
+      const matchesStatus =
+        filters.status === "all" ||
+        (filters.status === "verified" && item.verified === "Yes") ||
+        (filters.status === "notverified" && item.verified === "No");
+
+      return (
+        matchesSearch &&
+        matchesCountry &&
+        matchesGender &&
+        matchesColor &&
+        matchesStatus
+      );
+    });
+  }, [pigeons, filters]);
+
+  // paginate AFTER filtering (10 items per page by default)
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    const end = page * pageSize;
+    return filteredData.slice(start, end);
+  }, [filteredData, page, pageSize]);
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -198,11 +156,7 @@ const MyPigeon = () => {
       {/* Tabs and Filters */}
       <div className="bg-[#333D49] rounded-lg shadow-lg border border-gray-200 mb-2">
         <div className="pt-3 mb-6 px-4 rounded-t-lg bg-[#44505E]">
-          <Tabs
-            defaultActiveKey="all"
-            tabBarGutter={50}
-            className="custom-tabs"
-          >
+          <Tabs defaultActiveKey="all" tabBarGutter={50} className="custom-tabs">
             <TabPane tab="All" key="all" />
             <TabPane tab="Racing" key="racing" />
             <TabPane tab="Breeding" key="breeding" />
@@ -239,6 +193,7 @@ const MyPigeon = () => {
                 onChange={(value) => handleFilterChange("country", value)}
               >
                 <Option value="all">All</Option>
+                <Option value="bangladesh">Bangladesh</Option>
                 <Option value="usa">USA</Option>
                 <Option value="uk">UK</Option>
                 <Option value="canada">Canada</Option>
@@ -277,6 +232,7 @@ const MyPigeon = () => {
                 onChange={(value) => handleFilterChange("color", value)}
               >
                 <Option value="all">All</Option>
+                <Option value="white">White</Option>
                 <Option value="red">Red</Option>
                 <Option value="blue">Blue</Option>
                 <Option value="green">Green</Option>
@@ -308,52 +264,79 @@ const MyPigeon = () => {
       {/* Table */}
       <div className="overflow-x-auto border rounded-lg shadow-md bg-gray-50 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
         <div className="border rounded-lg shadow-md bg-gray-50">
-          <div style={{ minWidth: "max-content" }}>
-            <Table
-              rowSelection={rowSelection}
-              columns={columns}
-              dataSource={filteredData}
-              rowClassName={() => "hover-row"}
-              components={{
-                header: {
-                  cell: (props) => (
-                    <th
-                      {...props}
-                      style={{
-                        height: 70,
-                        lineHeight: "70px",
-                        background: "#333D49",
-                        color: "#ffffff",
-                        fontWeight: 600,
-                        padding: "0 16px",
-                      }}
-                    >
-                      {props.children}
-                    </th>
+          <div
+            style={{
+              minWidth: filteredData.length > 0 ? "max-content" : "100%",
+            }}
+          >
+            {isLoading ? (
+              <div className="flex justify-center items-center p-6">
+                <Spin size="large" />
+              </div>
+            ) : (
+              <Table
+                rowSelection={rowSelection}
+                columns={columns}
+                dataSource={paginatedData}
+                rowClassName={() => "hover-row"}
+                bordered={false}
+                size="small"
+                rowKey="key"
+                scroll={filteredData.length > 0 ? { x: "max-content" } : undefined}
+                pagination={{
+                  current: page,
+                  pageSize: pageSize,
+                  total: filteredData.length, // total after filtering
+                  showSizeChanger: true,
+                  pageSizeOptions: ["5", "10", "20", "50"],
+                  onChange: (newPage, newPageSize) => {
+                    setPage(newPage);
+                    setPageSize(newPageSize);
+                  },
+                }}
+                components={{
+                  header: {
+                    cell: (props) => (
+                      <th
+                        {...props}
+                        style={{
+                          height: 70,
+                          lineHeight: "70px",
+                          background: "#333D49",
+                          color: "#ffffff",
+                          fontWeight: 600,
+                          padding: "0 16px",
+                        }}
+                      >
+                        {props.children}
+                      </th>
+                    ),
+                  },
+                  body: {
+                    cell: (props) => (
+                      <td
+                        {...props}
+                        style={{
+                          background: "#212B35",
+                          padding: "12px 16px",
+                          color: "#ffffff",
+                          borderBottom: "none",
+                        }}
+                      >
+                        {props.children}
+                      </td>
+                    ),
+                  },
+                }}
+                locale={{
+                  emptyText: (
+                    <div className="py-10 text-gray-400 text-center">
+                      No pigeons found 🕊️
+                    </div>
                   ),
-                },
-                body: {
-                  cell: (props) => (
-                    <td
-                      {...props}
-                      style={{
-                        background: "#212B35",
-                        padding: "12px 16px",
-                        color: "#ffffff",
-                        borderBottom: "none",
-                      }}
-                    >
-                      {props.children}
-                    </td>
-                  ),
-                },
-              }}
-              bordered={false}
-              pagination={false}
-              size="small"
-              scroll={{ x: "max-content" }}
-              rowKey="key"
-            />
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -362,11 +345,8 @@ const MyPigeon = () => {
       <AddNewPigeon
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
-        onSave={(newPigeon) => {
-          setData((prev) => [
-            ...prev,
-            { ...newPigeon, key: String(prev.length + 1) },
-          ]);
+        onSave={() => {
+          // In real use, POST to API then refetch via RTK Query
           setIsModalVisible(false);
         }}
       />
