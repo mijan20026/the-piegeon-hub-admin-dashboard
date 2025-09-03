@@ -72,10 +72,6 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/merchantManagement",
-        element: <SaleRepsManagement />,
-      },
-      {
         path: "/my-pigeon",
         element: <MyPigeon />,
       },
@@ -104,6 +100,10 @@ const router = createBrowserRouter([
         element: <AdminProfile />,
       },
       // Pigeon End
+      {
+        path: "/merchantManagement",
+        element: <SaleRepsManagement />,
+      },
       {
         path: "/customerManagement",
         element: <CustomerManagement />,

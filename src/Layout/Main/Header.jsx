@@ -87,7 +87,7 @@ const Header = () => {
       </h2>
       <div className="flex items-center gap-5">
         {/* Profile Icon with Dropdown Menu */}
-        <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
+        <Dropdown menu={menu} trigger={["click"]} placement="bottomRight">
           <div className="flex items-center gap-3 cursor-pointer">
             <div className="flex flex-row gap-1">
               <p>Hello,</p>{" "}
@@ -113,7 +113,7 @@ const Header = () => {
           onClick={handleOpenNotification}
           className="h-fit mt-[10px] cursor-pointer"
         >
-          <Badge count={notifications.length} backgroundColor="#071952">
+          <Badge count={notifications.length} backgroundcolor="#071952">
             <FaRegBell color="#071952" size={24} />
           </Badge>
         </div>
@@ -240,7 +240,7 @@ export default Header;
 //         </Dropdown>
 //         {/* Notification Icon */}
 //         <Link to="/notification" className="h-fit mt-[10px]">
-//           <Badge count={5} backgroundColor="#071952">
+//           <Badge count={5} backgroundcolor="#071952">
 //             <FaRegBell color="#071952" size={24} />
 //           </Badge>
 //         </Link>

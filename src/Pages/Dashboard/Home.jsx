@@ -26,6 +26,7 @@ import VerifyIcon from "../../../src/assets/verify.png";
 import AwardIcon from "../../../src/assets/win.png";
 import SubscriptionIcon from "../../../src/assets/subscription.png";
 import { Select } from "antd";
+import { useGetOverviewStatsQuery } from "../../redux/apiSlices/dashboardSlice";
 const { Option } = Select;
 
 ChartJS.register(
@@ -96,6 +97,10 @@ const Home = () => {
     },
   };
 
+  const { data: stats, isLoading } = useGetOverviewStatsQuery();
+
+  if (isLoading) return <p>Loading...</p>;
+
   return (
     <div className="p-2 md:p-4 space-y-4 md:space-y-6">
       {/* Home Card */}
@@ -119,66 +124,68 @@ const Home = () => {
         {/* Card Section */}
         <div className="w-full lg:w-1/3 border border-primary p-6 rounded-lg">
           <div className="flex justify-between items-center mb-4 text-white">
-            <h2 className="text-secondary mt-4 text-[24px] font-bold">
-              Statistics
-            </h2>
-            {/* <p className="font-medium text-[14px] py-[12px] px-[16px] border border-primary text-secondary rounded-lg">
-              Last 7 Days
-            </p> */}
-            <Select
+            <h2 className="text-secondary text-[24px] font-bold">Statistics</h2>
+            <div className="border border-primary text-primary px-4 py-1 rounded-md">
+              <p>7 Days</p>
+            </div>
+            {/* <Select
               defaultValue="7days"
-              style={{
-                width: 100,
-              }}
+              style={{ width: 100 }}
               className="custom-select-ant-modal"
             >
               <Option value="1day">1 Day</Option>
               <Option value="7days">7 Days</Option>
               <Option value="1month">1 Month</Option>
-            </Select>
+            </Select> */}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 h-auto lg:h-[240px]">
+            {/* Total Pigeons */}
             <div className="bg-white border border-primary rounded-lg flex items-center justify-center">
               <div className="flex flex-col items-baseline">
                 <h2 className="text-center text-[16px] font-semibold mb-1">
                   Total Pigeon
                 </h2>
                 <h3 className="text-secondary text-[24px] text-center font-semibold flex items-center gap-3">
-                  <img src={PigeonIcon} alt="Logo" /> 2000
+                  <img src={PigeonIcon} alt="Logo" /> {stats?.totalPigeons || 0}
                 </h3>
               </div>
             </div>
 
+            {/* Verified Pigeons */}
             <div className="bg-white border border-primary rounded-lg flex items-center justify-center">
               <div className="flex flex-col items-baseline">
                 <h2 className="text-center text-[16px] font-semibold mb-1">
                   Verified Pigeon
                 </h2>
                 <h3 className="text-secondary text-[24px] text-center font-semibold flex items-center gap-3">
-                  <img src={VerifyIcon} alt="Logo" /> 1000
+                  <img src={VerifyIcon} alt="Logo" />{" "}
+                  {stats?.verifiedPigeons || 0}
                 </h3>
               </div>
             </div>
 
+            {/* Iconic Pigeons */}
             <div className="bg-white border border-primary rounded-lg flex items-center justify-center">
               <div className="flex flex-col items-baseline">
                 <h2 className="text-center text-[16px] font-semibold mb-1">
                   Iconic Pigeon
                 </h2>
                 <h3 className="text-secondary text-[24px] text-center font-semibold flex items-center gap-3">
-                  <img src={AwardIcon} alt="Logo" /> 300
+                  <img src={AwardIcon} alt="Logo" /> {stats?.iconPigeons || 0}
                 </h3>
               </div>
             </div>
 
+            {/* Subscription Revenue */}
             <div className="bg-white border border-primary rounded-lg flex items-center justify-center">
               <div className="flex flex-col items-baseline">
                 <h2 className="text-center text-[16px] font-semibold mb-1">
                   Subscription Revenue
                 </h2>
                 <h3 className="text-secondary text-[24px] text-center font-semibold flex items-center gap-3">
-                  <img src={SubscriptionIcon} alt="Logo" /> $4,250
+                  <img src={SubscriptionIcon} alt="Logo" /> $
+                  {stats?.subscriptionRevenue || 0}
                 </h3>
               </div>
             </div>

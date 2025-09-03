@@ -5,8 +5,8 @@ import VerifyIcon from "../../../src/assets/verify.png";
 import { getImageUrl } from "../common/imageUrl";
 import PigeonImage from "../../../src/assets/pigeon-image.png";
 
-const getImageUrlTable = (path) =>
-  path ? `${getImageUrl}${path}` : PigeonImage;
+// const getImageUrlTable = (path) =>
+//   path ? `${getImageUrl}${path}` : PigeonImage;
 
 const getColumns = () => [
   {
@@ -18,7 +18,7 @@ const getColumns = () => [
       <img
         // src={src || "/assets/pigeon-image.png"}
         // src={getImageUrl(item.image)}
-        src={getImageUrlTable(src)}
+        src={getImageUrl(src)}
         alt="pigeon"
         style={{
           width: 50,
@@ -66,8 +66,10 @@ const PigeonTable = () => {
   const [page, setPage] = useState(1);
 
   const { data, isLoading, isError } = useGetPigeonsQuery({ page, limit: 10 });
+  console.log(data);
 
   const pigeons = data?.pigeons || [];
+  console.log(pigeons);
   const pagination = data?.pagination || {};
 
   const columns = getColumns();

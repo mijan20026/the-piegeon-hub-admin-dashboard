@@ -1,3 +1,4 @@
+// LineChart.jsx
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
@@ -10,6 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useGetMonthlyRevenueQuery } from "../../redux/apiSlices/dashboardSlice";
 
 // Registering chart.js components
 ChartJS.register(
@@ -21,10 +23,28 @@ ChartJS.register(
   Tooltip
 );
 
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 const LineChart = () => {
-  // State to manage the selected year, with 2025 as the default
   const [selectedYear, setSelectedYear] = useState(2025);
   const [chartHeight, setChartHeight] = useState("200px");
+
+  // Fetch revenue data from API
+  const { data: revenueData = [], isLoading } =
+    useGetMonthlyRevenueQuery(selectedYear);
 
   // Effect to update chart height based on screen size
   useEffect(() => {
@@ -37,118 +57,32 @@ const LineChart = () => {
         setChartHeight("250px");
       }
     };
-
-    // Set initial height
     updateChartHeight();
-
-    // Add event listener for window resize
     window.addEventListener("resize", updateChartHeight);
-
-    // Clean up event listener
     return () => window.removeEventListener("resize", updateChartHeight);
   }, []);
 
-  // Data for the line chart
-  const allData = {
-    2023: {
-      labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      datasets: [
-        {
-          label: "Total Revenue",
-          data: [100, 120, 150, 160, 180, 200, 250, 270, 220, 240, 210, 250],
-          fill: false,
-          borderColor: "#071952",
-          backgroundColor: "transparent",
-          tension: 0.4,
-          borderWidth: 2,
-          pointBorderColor: "#071952",
-          pointBackgroundColor: "#071952",
-          pointRadius: 4,
-        },
-      ],
-    },
-    2024: {
-      labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      datasets: [
-        {
-          label: "Total Revenue",
-          data: [150, 120, 145, 160, 180, 387, 225, 210, 230, 126, 250, 300],
-          fill: false,
-          borderColor: "#071952",
-          backgroundColor: "transparent",
-          tension: 0.4,
-          borderWidth: 2,
-          pointBorderColor: "#071952",
-          pointBackgroundColor: "#071952",
-          pointRadius: 4,
-        },
-      ],
-    },
-    2025: {
-      labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      datasets: [
-        {
-          label: "Total Revenue",
-          data: [200, 180, 210, 250, 300, 400, 350, 320, 310, 290, 330, 400],
-          fill: false,
-          borderColor: "#071952",
-          backgroundColor: "transparent",
-          tension: 0.4,
-          borderWidth: 2,
-          pointBorderColor: "#071952",
-          pointBackgroundColor: "#088395",
-          pointRadius: 4,
-        },
-      ],
-    },
+  // Map API response to chart data
+  const chartData = {
+    labels: months,
+    datasets: [
+      {
+        label: "Total Revenue",
+        data: months.map((_, idx) => {
+          const monthData = revenueData.find((item) => item.month === idx + 1);
+          return monthData ? monthData.revenue : 0;
+        }),
+        fill: false,
+        borderColor: "#071952",
+        backgroundColor: "transparent",
+        tension: 0.4,
+        borderWidth: 2,
+        pointBorderColor: "#071952",
+        pointBackgroundColor: "#088395",
+        pointRadius: 4,
+      },
+    ],
   };
-
-  // Function to handle the change of selected year
-  const handleYearChange = (event) => {
-    setSelectedYear(parseInt(event.target.value));
-  };
-
-  // Chart options and data based on selected year
-  const data = allData[selectedYear];
 
   const options = {
     responsive: true,
@@ -156,64 +90,47 @@ const LineChart = () => {
     plugins: {
       legend: {
         display: false,
-        labels: {
-          color: "#088395",
-        },
+        labels: { color: "#088395" },
       },
       tooltip: {
         titleColor: "#ffffff",
         bodyColor: "#ffffff",
         backgroundColor: "#088395",
-        padding: {
-          x: 20, // Horizontal padding
-          y: 2, // Vertical padding
-        },
+        padding: { x: 20, y: 2 },
         cornerRadius: 8,
         displayColors: false,
         callbacks: {
-          title: () => null, // ⬅ Removes month name
+          title: () => null,
           label: (context) => `$${context.raw.toLocaleString()}`,
         },
       },
     },
     scales: {
       x: {
-        grid: {
-          display: true,
-          color: "#088395",
-        },
+        grid: { display: true, color: "#088395" },
         ticks: {
           color: "#181818",
           maxRotation: 45,
           minRotation: 0,
           autoSkip: true,
-          font: {
-            size: (context) => {
-              return window.innerWidth < 768 ? 8 : 12;
-            },
-          },
+          font: { size: window.innerWidth < 768 ? 8 : 12 },
         },
       },
       y: {
-        grid: {
-          display: false,
-        },
+        grid: { display: false },
         beginAtZero: false,
         ticks: {
           color: "#181818",
           padding: window.innerWidth < 768 ? 10 : 32,
-          callback: function (value) {
-            return `$${value.toLocaleString()}K`;
-          },
-          font: {
-            size: (context) => {
-              return window.innerWidth < 768 ? 8 : 12;
-            },
-          },
+          callback: (value) => `$${value.toLocaleString()}`,
+          font: { size: window.innerWidth < 768 ? 8 : 12 },
         },
       },
     },
   };
+
+  const handleYearChange = (event) =>
+    setSelectedYear(parseInt(event.target.value));
 
   return (
     <div>
@@ -221,6 +138,7 @@ const LineChart = () => {
         <h2 className="text-lg sm:text-xl font-bold text-secondary">
           Total Revenue
         </h2>
+        {/* Uncomment to enable year selection */}
         {/* <select
           value={selectedYear}
           onChange={handleYearChange}
@@ -236,7 +154,7 @@ const LineChart = () => {
         style={{ width: "100%", height: chartHeight }}
         className="text-white"
       >
-        <Line data={data} options={options} />
+        <Line data={chartData} options={options} />
       </div>
     </div>
   );

@@ -3,6 +3,13 @@ import { api } from "../api/baseApi";
 
 const dashboardSlice = api.injectEndpoints({
   endpoints: (builder) => ({
+    getOverviewStats: builder.query({
+      query: () => ({
+        url: "/overview/stats",
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data,
+    }),
     getPigeons: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/pigeon?page=${page}&limit=${limit}`,
@@ -13,7 +20,7 @@ const dashboardSlice = api.injectEndpoints({
           key: pigeon._id,
           image: pigeon.photos?.[0] ? `${pigeon.photos[0]}` : "",
           name: pigeon.name,
-          country: { name: pigeon.country, icon: "" }, // add icon if available
+          country: { name: pigeon.country, icon: "" },
           breeder: pigeon.breeder,
           ringNumber: pigeon.ringNumber,
           birthYear: pigeon.birthYear,
@@ -34,7 +41,18 @@ const dashboardSlice = api.injectEndpoints({
         };
       },
     }),
+    getMonthlyRevenue: builder.query({
+      query: (year) => ({
+        url: `/overview/monthly-revenue?year=${year}`,
+        method: "GET",
+      }),
+      transformResponse: (response) => response.data || [],
+    }),
   }),
 });
 
-export const { useGetPigeonsQuery } = dashboardSlice;
+export const {
+  useGetPigeonsQuery,
+  useGetOverviewStatsQuery,
+  useGetMonthlyRevenueQuery,
+} = dashboardSlice;
