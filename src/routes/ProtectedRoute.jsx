@@ -1,24 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useProfileQuery } from '../redux/apiSlices/authSlice';
+// ProtectedRoute.jsx
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode"; // ✅ fixed import
 
-const PrivateRoute = ({ children }) => {
-    const location = useLocation();
-    const {data: profile, isLoading , isError, isFetching} = useProfileQuery(); 
+const ProtectedRoute = ({ children }) => {
+  const location = useLocation();
+  const token = localStorage.getItem("token");
 
-    if (isLoading || isFetching) {
-        return <div>Loading...</div>;
+  if (!token) {
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  }
+
+  try {
+    const decoded = jwtDecode(token); // ✅ fixed usage
+    const userRole = decoded?.role;
+
+    if (userRole === "ADMIN" || userRole === "SUPER_ADMIN") {
+      return children;
+    } else {
+      return <Navigate to="/auth/login" state={{ from: location }} replace />;
     }
-    
-    if (isError) {
-        return <Navigate to="/auth/login" state={{ from: location }} />;
-    }
-    
-    if (profile?.role && (profile?.role === "ADMIN" || profile?.role === "SUPER_ADMIN")) {
-        return children;
-    }
-    
-    return <Navigate to="/auth/login" state={{ from: location }} />;
+  } catch (error) {
+    console.error("Invalid token:", error);
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  }
 };
 
-export default PrivateRoute;
+export default ProtectedRoute;

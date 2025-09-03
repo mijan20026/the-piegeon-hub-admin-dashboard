@@ -16,10 +16,9 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (profile && !user) {
-     
       setUser(profile);
     }
-  }, [profile, user]); 
+  }, [profile, user]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

@@ -1,61 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table } from "antd";
-import PigeonImage from "../../../src/assets/pigeon-image.png";
+import { useGetPigeonsQuery } from "../../redux/apiSlices/dashboardSlice";
 import VerifyIcon from "../../../src/assets/verify.png";
+import { getImageUrl } from "../common/imageUrl";
+import PigeonImage from "../../../src/assets/pigeon-image.png";
 
-// ✅ Add country icons (replace with your own icons if available)
-import GermanyFlag from "../../../src/assets/country-flag.png";
+const getImageUrlTable = (path) =>
+  path ? `${getImageUrl}${path}` : PigeonImage;
 
-// Sample data for pigeons
-const dataSource = [
-  {
-    key: "1",
-    image: PigeonImage,
-    name: "Pigeon 1",
-    country: { name: "USA", icon: GermanyFlag }, // ✅ object with name & icon
-    breeder: "Breeder A",
-    ringNumber: "R1234",
-    birthYear: 2020,
-    father: "Father A",
-    mother: "Mother A",
-    gender: "Male",
-    status: "Active",
-    verified: "Yes",
-    icon: VerifyIcon,
-  },
-  {
-    key: "2",
-    image: PigeonImage,
-    name: "Pigeon 2",
-    country: { name: "UK", icon: GermanyFlag },
-    breeder: "Breeder B",
-    ringNumber: "R1235",
-    birthYear: 2021,
-    father: "Father B",
-    mother: "Mother B",
-    gender: "Female",
-    status: "Inactive",
-    verified: "No",
-    icon: VerifyIcon,
-  },
-  {
-    key: "3",
-    image: PigeonImage,
-    name: "Pigeon 3",
-    country: { name: "Canada", icon: GermanyFlag },
-    breeder: "Breeder C",
-    ringNumber: "R1236",
-    birthYear: 2019,
-    father: "Father C",
-    mother: "Mother C",
-    gender: "Male",
-    status: "Active",
-    verified: "Yes",
-    icon: VerifyIcon,
-  },
-];
-
-// Column definitions
 const getColumns = () => [
   {
     title: "Image",
@@ -64,7 +16,9 @@ const getColumns = () => [
     width: 100,
     render: (src) => (
       <img
-        src={src}
+        // src={src || "/assets/pigeon-image.png"}
+        // src={getImageUrl(item.image)}
+        src={getImageUrlTable(src)}
         alt="pigeon"
         style={{
           width: 50,
@@ -80,16 +34,7 @@ const getColumns = () => [
     title: "Country",
     dataIndex: "country",
     key: "country",
-    render: (country) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-        <img
-          src={country.icon}
-          alt={country.name}
-          style={{ width: 20, height: 20, borderRadius: "50%" }}
-        />
-        <span>{country.name}</span>
-      </div>
-    ),
+    render: (country) => <span>{country?.name || "-"}</span>,
   },
   { title: "Breeder", dataIndex: "breeder", key: "breeder" },
   { title: "Ring Number", dataIndex: "ringNumber", key: "ringNumber" },
@@ -104,29 +49,37 @@ const getColumns = () => [
     dataIndex: "icon",
     key: "icon",
     width: 80,
-    render: (src) => (
-      <img
-        src={src}
-        alt="verify"
-        style={{
-          width: 24,
-          height: 24,
-          objectFit: "cover",
-        }}
-      />
-    ),
+    render: (src) =>
+      src ? (
+        <img
+          src={VerifyIcon}
+          alt="verify"
+          style={{ width: 24, height: 24, objectFit: "cover" }}
+        />
+      ) : (
+        "-"
+      ),
   },
 ];
 
 const PigeonTable = () => {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, isError } = useGetPigeonsQuery({ page, limit: 10 });
+
+  const pigeons = data?.pigeons || [];
+  const pagination = data?.pagination || {};
+
   const columns = getColumns();
 
-  // Row selection config
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       console.log("Selected row keys:", selectedRowKeys, selectedRows);
     },
   };
+
+  if (isLoading) return <p>Loading pigeons...</p>;
+  if (isError) return <p>Failed to load pigeons.</p>;
 
   return (
     <div className="w-full">
@@ -141,8 +94,8 @@ const PigeonTable = () => {
             <Table
               rowSelection={rowSelection}
               columns={columns}
-              dataSource={dataSource}
-              rowClassName={() => "hover-row"} // ✅ add hover class
+              dataSource={pigeons}
+              rowClassName={() => "hover-row"}
               components={{
                 header: {
                   cell: (props) => (
@@ -178,7 +131,12 @@ const PigeonTable = () => {
                 },
               }}
               bordered={false}
-              pagination={false}
+              pagination={{
+                current: pagination.page,
+                pageSize: pagination.limit,
+                total: pagination.total,
+                onChange: (page) => setPage(page),
+              }}
               size="small"
               scroll={{ x: "max-content" }}
               rowKey="key"

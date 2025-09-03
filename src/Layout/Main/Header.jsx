@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { imageUrl } from "../../redux/api/baseApi";
+// import { imageUrl } from "../../components/common/imageUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegBell } from "react-icons/fa6";
 import { Badge, Button, Dropdown, Menu, Modal, List } from "antd";
 import { useUser } from "../../provider/User";
 import { IoIosLogOut } from "react-icons/io";
 import Avatar from "../../assets/avatar.png";
+import { getImageUrl } from "../../components/common/imageUrl";
 
 const Header = () => {
   const { user } = useUser();
@@ -15,16 +16,27 @@ const Header = () => {
 
   const src = user?.image?.startsWith("https")
     ? user?.image
-    : `${imageUrl}/${user?.image}`;
+    : `${getImageUrl}/${user?.image}`;
 
   const showLogoutConfirm = () => {
     setIsLogoutModalOpen(true); // Show the confirmation modal
   };
 
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   setIsLogoutModalOpen(false); // Close the modal
+  //   navigate("/auth/login");
+  // };
+
   const handleLogout = () => {
+    // ✅ Clear token
     localStorage.removeItem("token");
-    setIsLogoutModalOpen(false); // Close the modal
-    navigate("/auth/login");
+
+    // ✅ Close modal
+    setIsLogoutModalOpen(false);
+
+    // ✅ Hard redirect so app re-checks ProtectedRoute
+    window.location.href = "/auth/login";
   };
 
   const handleCancelLogout = () => {

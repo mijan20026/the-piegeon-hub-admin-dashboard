@@ -54,16 +54,17 @@ import MyPigeon from "../components/myPigeon/MyPigeon";
 import PigeonManagement from "../components/pigeonManagement/PigeonManagement";
 import VerifyBreeder from "../components/verifyBreeder/VerifyBreeder";
 import { Profiler } from "react";
+import ProtectedRoute from "./ProtectedRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    // element: (
-    //   <ProtectedRoute>
-    //     <Main />
-    //   </ProtectedRoute>
-    // ),
-    element: <Main />,
+    element: (
+      <ProtectedRoute>
+        <Main />
+      </ProtectedRoute>
+    ),
+    // element: <Main />,
     children: [
       // Pigeon start
       {

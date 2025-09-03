@@ -1,21 +1,34 @@
-import { Button, Checkbox, Form, Input } from "antd";
+import { Form, Input, message as antdMessage } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import FormItem from "../../components/common/FormItem";
-import image4 from "../../assets/image4.png";
-import googleIcon from "../../assets/google-icon.png";
-// import Cookies from "js-cookie";
+import { useLoginMutation } from "../../redux/apiSlices/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [login, { isLoading }] = useLoginMutation();
+  const [messageApi, contextHolder] = antdMessage.useMessage(); // ✅ hook version
 
   const onFinish = async (values) => {
-    navigate("/");
-    // Cookies.set('token', token, { expires: 7 })
+    try {
+      const response = await login(values).unwrap();
+      if (response?.success) {
+        // store token
+        localStorage.setItem("token", response.data.accessToken);
+
+        // ✅ don't await — toast + navigation happen instantly
+        messageApi.success(response.message || "Logged in successfully!");
+        navigate("/");
+      } else {
+        messageApi.error(response.message || "Login failed!");
+      }
+    } catch (error) {
+      messageApi.error(error || "Something went wrong!");
+    }
   };
 
   return (
     <div>
+      {contextHolder} {/* ✅ required for hook */}
       <div className="text-center mb-8">
         <h1 className="text-[35px] font-semibold mb-[10px] mt-[20px] text-white">
           Log In
@@ -28,24 +41,18 @@ const Login = () => {
             <p style={{ color: "#ffffff", fontWeight: 500 }}>Email Address</p>
           }
           rules={[
-            {
-              required: true,
-              message: "Please input your Email!",
-              type: "email", // optional: validates email format
-            },
+            { required: true, message: "Please input your Email!" },
+            { type: "email", message: "Please enter a valid email!" },
           ]}
         >
           <Input
-            type="email"
             placeholder="Enter your email"
             style={{
               height: 50,
               border: "1px solid #ffffff",
-              outline: "none",
-              boxShadow: "none",
               borderRadius: 5,
-              backgroundColor: "transparent", // ✅ transparent background
-              color: "#ffffff", // optional: make text white
+              backgroundColor: "transparent",
+              color: "#ffffff",
             }}
           />
         </Form.Item>
@@ -53,95 +60,39 @@ const Login = () => {
         <Form.Item
           name="password"
           label={<p style={{ color: "#ffffff", fontWeight: 500 }}>Password</p>}
-          rules={[
-            {
-              required: true,
-              message: "Please input your Password!",
-            },
-          ]}
+          rules={[{ required: true, message: "Please input your Password!" }]}
         >
           <Input.Password
-            type="password"
             placeholder="Enter your password"
             style={{
               height: 50,
               border: "1px solid #ffffff",
-              outline: "none",
-              boxShadow: "none",
               borderRadius: 5,
-              backgroundColor: "transparent", // ✅ transparent background
-              color: "#ffffff", // ✅ white text
+              backgroundColor: "transparent",
+              color: "#ffffff",
             }}
           />
         </Form.Item>
 
-        <div className="flex items-center justify-between">
-          <Form.Item
-            style={{ marginBottom: 0 }}
-            name="remember"
-            valuePropName="checked"
-          >
-            {/* <Checkbox>Remember me</Checkbox> */}
-          </Form.Item>
-
-          <a
-            className="login-form-forgot text-[#ffffff] hover:text-primary rounded-md font-semibold"
-            href="/auth/forgot-password"
-          >
-            Forgot password
-          </a>
-        </div>
-
-        <Form.Item style={{ marginBottom: 0 }}>
+        <Form.Item>
           <button
-            htmlType="submit"
             type="submit"
+            disabled={isLoading}
             style={{
               width: "100%",
               height: 45,
               color: "white",
-              fontWeight: "400px",
-              fontSize: "18px",
+              fontWeight: 400,
+              fontSize: 18,
               marginTop: 20,
-              borderRadius: "5px",
+              borderRadius: 5,
             }}
             className="flex items-center justify-center bg-primary hover:bg-[#1f2682] transition rounded-lg"
           >
-            Sign in
+            {isLoading ? "Signing in..." : "Sign In"}
           </button>
         </Form.Item>
       </Form>
-      {/* <Form.Item style={{ marginBottom: 0 }}>
-          <button
-            htmlType="submit"
-            type="submit"
-            style={{
-              width: "100%",
-              height: 45,
-              color: "#1E1E1E",
-              fontWeight: "400px",
-              fontSize: "18px",
-              marginTop: 20,
-              borderRadius: "200px",
-              border: "1px solid #3FAE6A",
-            }}
-            className="flex items-center justify-center rounded-lg"
-          >
-            <img src={googleIcon} alt="Google logo" className="mr-[12px]" />
-            Sign in with Google
-          </button>
-        </Form.Item> */}
-      {/* <div className="mt-[20px]">
-        <p className="text-center text-[#1E1E1E]">
-          Don't have an account?{" "}
-          <a
-            href="/auth/register"
-            className="text-[#3FAE6A] hover:text-[#1E1E1E] font-semibold"
-          >
-            Sign Up
-          </a>
-        </p>
-      </div> */}
     </div>
   );
 };
