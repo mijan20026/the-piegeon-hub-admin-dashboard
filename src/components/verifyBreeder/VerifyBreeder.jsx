@@ -13,7 +13,13 @@ import {
 } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import AddVerifiedBadge from "./AddVerifiedBadge"; // Add Modal
-import { FaTrash } from "react-icons/fa";
+import {
+  FaTrash,
+  FaEye,
+  FaEdit,
+  FaToggleOn,
+  FaToggleOff,
+} from "react-icons/fa";
 import Swal from "sweetalert2";
 import GermanyFlag from "../../../src/assets/country-flag.png";
 
@@ -178,7 +184,44 @@ const VerifyBreeder = () => {
       width: 160,
       render: (_, record) => (
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-          <Tooltip title="View & Update Details">
+          <div className="flex gap-5 border px-4 py-2 rounded">
+            <Tooltip title="View & Update Details">
+              <FaEye
+                style={{ color: "#ffff", fontSize: "16px", cursor: "pointer" }}
+                onClick={() => showViewModal(record)}
+              />
+            </Tooltip>
+
+            {/* <Tooltip title="Edit">
+              <FaEdit
+                style={{ color: "#ffff", fontSize: "16px", cursor: "pointer" }}
+                onClick={() => handleDelete(record)}
+              />
+            </Tooltip> */}
+
+            <Tooltip title="Delete">
+              <FaTrash
+                style={{
+                  color: "#ff4d4f",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleDelete(record)}
+              />
+            </Tooltip>
+            {/* <Tooltip title="Status">
+              <Switch
+                size="small"
+                checked={record.status === "Active"}
+                style={{
+                  backgroundColor:
+                    record.status === "Active" ? "#3fae6a" : "gray",
+                }}
+                onChange={(checked) => handleStatusChange(record, checked)}
+              />
+            </Tooltip> */}
+          </div>
+          {/* <Tooltip title="View & Update Details">
             <EditOutlined
               className="text-white hover:text-gray-400 text-xl"
               onClick={() => showViewModal(record)}
@@ -202,7 +245,7 @@ const VerifyBreeder = () => {
               }}
               onChange={(checked) => handleStatusChange(record, checked)}
             />
-          </Tooltip>
+          </Tooltip> */}
         </div>
       ),
     },

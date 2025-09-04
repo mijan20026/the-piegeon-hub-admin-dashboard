@@ -1,8 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { Button, Table, Input, Select, Row, Col } from "antd";
+import { Button, Table, Input, Select, Row, Col, Tooltip, Switch } from "antd";
+import { EditOutlined } from "@ant-design/icons";
+import { FaTrash, FaEye, FaEdit } from "react-icons/fa";
 import PigeonImage from "../../../src/assets/pigeon-image.png";
 import VerifyIcon from "../../../src/assets/verify.png";
 import GermanyFlag from "../../../src/assets/country-flag.png";
+import Swal from "sweetalert2";
 
 const { Option } = Select;
 
@@ -195,6 +198,75 @@ const getColumns = () => [
       ) : (
         "-"
       ),
+  },
+  {
+    title: "Actions",
+    key: "actions",
+    width: 160,
+    render: (_, record) => (
+      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+        <div className="flex gap-5 border px-4 py-2 rounded">
+          <Tooltip title="View & Update Details">
+            <FaEye
+              style={{ color: "#ffff", fontSize: "16px", cursor: "pointer" }}
+              onClick={() => showViewModal(record)}
+            />
+          </Tooltip>
+
+          <Tooltip title="Edit">
+            <FaEdit
+              style={{ color: "#ffff", fontSize: "16px", cursor: "pointer" }}
+              onClick={() => handleDelete(record)}
+            />
+          </Tooltip>
+
+          <Tooltip title="Delete">
+            <button
+              onClick={() => {
+                Swal.fire({
+                  title: "Are you sure?",
+                  text: "You won't be able to revert this!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Yes, delete it!",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    setData(data.filter((item) => item.id !== record.id));
+                    Swal.fire({
+                      title: "Deleted!",
+                      text: "User has been deleted.",
+                      icon: "success",
+                    });
+                  }
+                });
+              }}
+              className="text-red-500 hover:text-red-700 text-md"
+            >
+              <FaTrash
+                style={{
+                  color: "text-red-700",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+              />
+            </button>
+          </Tooltip>
+        </div>
+
+        {/* <Tooltip title="Status">
+          <Switch
+            size="small"
+            checked={record.status === "Active"}
+            style={{
+              backgroundColor: record.status === "Active" ? "#3fae6a" : "gray",
+            }}
+            onChange={(checked) => handleStatusChange(record, checked)}
+          />
+        </Tooltip> */}
+      </div>
+    ),
   },
 ];
 

@@ -12,9 +12,15 @@ import {
   Col,
 } from "antd";
 import { useNavigate } from "react-router-dom";
-import { FaTrash } from "react-icons/fa";
 import { EditOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
+import {
+  FaTrash,
+  FaEye,
+  FaEdit,
+  FaToggleOn,
+  FaToggleOff,
+} from "react-icons/fa";
 
 const { Option } = Select;
 
@@ -167,88 +173,102 @@ const LoginCredentials = () => {
       width: 220,
       render: (_, record) => (
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-          <Tooltip title="View & Update Details">
-            <button
-              onClick={() => showViewModal(record)}
-              className="text-white hover:text-gray-400 text-xl"
-            >
-              <EditOutlined />
-            </button>
-          </Tooltip>
+          <div className="flex gap-5 border px-4 py-2 rounded">
+            <Tooltip title="View & Update Details">
+              <button
+                onClick={() => showViewModal(record)}
+                className="text-white hover:text-gray-400 text-xl"
+              >
+                <FaEdit
+                  style={{
+                    color: "#ffff",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                  }}
+                />
+              </button>
+            </Tooltip>
 
-          <Tooltip title="Delete">
-            <button
-              onClick={() => {
-                Swal.fire({
-                  title: "Are you sure?",
-                  text: "You won't be able to revert this!",
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085d6",
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "Yes, delete it!",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    setData(data.filter((item) => item.id !== record.id));
-                    Swal.fire({
-                      title: "Deleted!",
-                      text: "User has been deleted.",
-                      icon: "success",
-                    });
-                  }
-                });
-              }}
-              className="text-red-500 hover:text-red-700 text-md"
-            >
-              <FaTrash />
-            </button>
-          </Tooltip>
+            <Tooltip title="Delete">
+              <button
+                onClick={() => {
+                  Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      setData(data.filter((item) => item.id !== record.id));
+                      Swal.fire({
+                        title: "Deleted!",
+                        text: "User has been deleted.",
+                        icon: "success",
+                      });
+                    }
+                  });
+                }}
+                className="text-red-500 hover:text-red-700 text-md"
+              >
+                <FaTrash
+                  style={{
+                    color: "text-red-700",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                  }}
+                />
+              </button>
+            </Tooltip>
 
-          <Tooltip title="Status">
-            <Switch
-              size="small"
-              checked={record.status === "Active"}
-              style={{
-                backgroundColor:
-                  record.status === "Active" ? "#3fae6a" : "gray",
-              }}
-              onChange={(checked) => {
-                Swal.fire({
-                  title: "Are you sure?",
-                  text: `You are about to change status to ${
-                    checked ? "Active" : "Inactive"
-                  }.`,
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085d6",
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "Yes, change it!",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    setData((prev) =>
-                      prev.map((item) =>
-                        item.id === record.id
-                          ? {
-                              ...item,
-                              status: checked ? "Active" : "Inactive",
-                            }
-                          : item
-                      )
-                    );
-                    Swal.fire({
-                      title: "Updated!",
-                      text: `Status has been changed to ${
-                        checked ? "Active" : "Inactive"
-                      }.`,
-                      icon: "success",
-                      timer: 1500,
-                      showConfirmButton: false,
-                    });
-                  }
-                });
-              }}
-            />
-          </Tooltip>
+            <Tooltip title="Status">
+              <Switch
+                size="small"
+                checked={record.status === "Active"}
+                style={{
+                  backgroundColor:
+                    record.status === "Active" ? "#3fae6a" : "gray",
+                }}
+                onChange={(checked) => {
+                  Swal.fire({
+                    title: "Are you sure?",
+                    text: `You are about to change status to ${
+                      checked ? "Active" : "Inactive"
+                    }.`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, change it!",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      setData((prev) =>
+                        prev.map((item) =>
+                          item.id === record.id
+                            ? {
+                                ...item,
+                                status: checked ? "Active" : "Inactive",
+                              }
+                            : item
+                        )
+                      );
+                      Swal.fire({
+                        title: "Updated!",
+                        text: `Status has been changed to ${
+                          checked ? "Active" : "Inactive"
+                        }.`,
+                        icon: "success",
+                        timer: 1500,
+                        showConfirmButton: false,
+                      });
+                    }
+                  });
+                }}
+              />
+            </Tooltip>
+          </div>
         </div>
       ),
     },
