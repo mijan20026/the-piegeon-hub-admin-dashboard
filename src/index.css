@@ -505,3 +505,32 @@ select {
   font-weight: 600;
   font-size: 14px;
 }
+
+/* Pagination */
+/* default arrow (previous / next) */
+.ant-pagination-item-link {
+  color: #ffff !important; /* your arrow color */
+}
+/* on hover */
+.ant-pagination-item-link:hover {
+  color: #fff !important;
+}
+/* disabled arrow */
+.ant-pagination-disabled .ant-pagination-item-link {
+  color: #999;
+  border-color: #999;
+  cursor: not-allowed;
+}
+.ant-pagination-item a {
+  color: #ffff !important; /* your custom color */
+}
+.ant-pagination {
+  margin: 16px;
+}
+.ant-pagination-item-active {
+  background: #ffffff !important; /* your brand color */
+  border-color: #212b35 !important;
+}
+.ant-pagination-item-active a {
+  color: #212b35 !important;
+}

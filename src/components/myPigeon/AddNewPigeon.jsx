@@ -97,7 +97,6 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
           </Col>
 
           {/* Country */}
-          {/* Country */}
           <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Country"
@@ -118,7 +117,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
           </Col>
 
           {/* Category */}
-          <Col xs={24} sm={12} md={8}>
+          {/* <Col xs={24} sm={12} md={8}>
             <Form.Item
               label="Choose a Category"
               name="category"
@@ -136,7 +135,7 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 <Option value="deceased">Deceased</Option>
               </Select>
             </Form.Item>
-          </Col>
+          </Col> */}
 
           {/* Birth Year */}
           <Col xs={24} sm={12} md={8}>
@@ -267,9 +266,12 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 placeholder="Select Status"
                 className="custom-select-ant-modal"
               >
-                <Option value="Active">Active</Option>
-                <Option value="Inactive">Inactive</Option>
-                <Option value="Pending">Pending</Option>
+                <Option value="racing">Racing</Option>
+                <Option value="breeding">Breeding</Option>
+                <Option value="lost">Lost</Option>
+                <Option value="sold">Sold</Option>
+                <Option value="retired">Retired</Option>
+                <Option value="deceased">Deceased</Option>
               </Select>
             </Form.Item>
           </Col>
@@ -299,11 +301,16 @@ const AddNewPigeon = ({ visible, onCancel, onSave }) => {
                 placeholder="Select Rating"
                 className="custom-select-ant-modal"
               >
-                <Option value="1">1</Option>
-                <Option value="2">2</Option>
-                <Option value="3">3</Option>
-                <Option value="4">4</Option>
-                <Option value="5">5</Option>
+                <Option value="10">10</Option>
+                <Option value="20">20</Option>
+                <Option value="30">30</Option>
+                <Option value="40">40</Option>
+                <Option value="50">50</Option>
+                <Option value="60">60</Option>
+                <Option value="70">70</Option>
+                <Option value="80">80</Option>
+                <Option value="90">90</Option>
+                <Option value="100">100</Option>
               </Select>
             </Form.Item>
           </Col>

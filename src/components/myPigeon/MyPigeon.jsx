@@ -1,8 +1,9 @@
-// src/pages/MyPigeon.jsx
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Table, Input, Select, Row, Col, Tabs, Spin } from "antd";
 import AddNewPigeon from "./AddNewPigeon";
 import { useGetMyPigeonsQuery } from "../../redux/apiSlices/mypigeonSlice";
+import { getImageUrl } from "../common/imageUrl";
+import VerifyIcon from "../../assets/verify.png";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -13,31 +14,26 @@ const getColumns = () => [
     dataIndex: "image",
     key: "image",
     width: 100,
-    render: (src) =>
-      src ? (
-        <img
-          src={src}
-          alt="pigeon"
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: "50%",
-            objectFit: "cover",
-          }}
-        />
-      ) : (
-        <span>-</span>
-      ),
+    render: (src) => (
+      <img
+        src={getImageUrl(src)}
+        alt="pigeon"
+        style={{
+          width: 50,
+          height: 50,
+          borderRadius: "50%",
+          objectFit: "cover",
+        }}
+      />
+    ),
   },
   { title: "Name", dataIndex: "name", key: "name" },
   {
     title: "Country",
     dataIndex: "country",
     key: "country",
-    render: (country) => {
-      if (!country) return <span>-</span>;
-      return <span>{country.name}</span>;
-    },
+    render: (country) =>
+      country?.name ? <span>{country.name}</span> : <span>-</span>,
   },
   { title: "Breeder", dataIndex: "breeder", key: "breeder" },
   { title: "Ring Number", dataIndex: "ringNumber", key: "ringNumber" },
@@ -56,7 +52,7 @@ const getColumns = () => [
     render: (src) =>
       src && src !== "-" ? (
         <img
-          src={src}
+          src={VerifyIcon}
           alt="verify"
           style={{ width: 24, height: 24, objectFit: "cover" }}
         />
@@ -68,6 +64,7 @@ const getColumns = () => [
 
 const MyPigeon = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [tabKey, setTabKey] = useState("all");
   const [filters, setFilters] = useState({
     search: "",
     country: "all",
@@ -76,64 +73,36 @@ const MyPigeon = () => {
     status: "all",
   });
 
-  // pagination state (client-side, after filtering)
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
 
-  // fetch ALL pigeons (big limit) so filtering applies across entire dataset
-  const { data, isLoading } = useGetMyPigeonsQuery({ page: 1, limit: 1000 });
+  // Whenever filters or page changes -> trigger new query
+  const { data, isLoading } = useGetMyPigeonsQuery({
+    page,
+    limit: pageSize,
+    // search: filters.search || undefined,
+    searchTerm: filters.search || undefined, // <-- rename here
+    country: filters.country !== "all" ? filters.country : undefined,
+    gender: filters.gender !== "all" ? filters.gender : undefined,
+    color: filters.color !== "all" ? filters.color : undefined,
+    verified:
+      filters.status === "verified"
+        ? true
+        : filters.status === "notverified"
+        ? false
+        : undefined,
+    status: tabKey !== "all" ? tabKey : undefined, // <-- add this
+  });
+
   const pigeons = data?.pigeons || [];
+  const total = data?.pagination?.total || 0;
 
   const columns = getColumns();
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1); // reset to first page when filters change
+    setPage(1);
   };
-
-  // filter across the full dataset
-  const filteredData = useMemo(() => {
-    return pigeons.filter((item) => {
-      const search = filters.search.trim().toLowerCase();
-
-      const matchesSearch =
-        search === "" ||
-        item.name?.toLowerCase().includes(search) ||
-        item.breeder?.toLowerCase().includes(search) ||
-        item.ringNumber?.toLowerCase().includes(search);
-
-      const matchesCountry =
-        filters.country === "all" ||
-        item.country?.name?.toLowerCase() === filters.country;
-
-      const matchesGender =
-        filters.gender === "all" ||
-        item.gender?.toLowerCase() === filters.gender;
-
-      const matchesColor =
-        filters.color === "all" || item.color?.toLowerCase() === filters.color;
-
-      const matchesStatus =
-        filters.status === "all" ||
-        (filters.status === "verified" && item.verified === "Yes") ||
-        (filters.status === "notverified" && item.verified === "No");
-
-      return (
-        matchesSearch &&
-        matchesCountry &&
-        matchesGender &&
-        matchesColor &&
-        matchesStatus
-      );
-    });
-  }, [pigeons, filters]);
-
-  // paginate AFTER filtering (10 items per page by default)
-  const paginatedData = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    const end = page * pageSize;
-    return filteredData.slice(start, end);
-  }, [filteredData, page, pageSize]);
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -153,22 +122,29 @@ const MyPigeon = () => {
         </Button>
       </div>
 
-      {/* Tabs and Filters */}
+      {/* Tabs & Filters */}
       <div className="bg-[#333D49] rounded-lg shadow-lg border border-gray-200 mb-2">
         <div className="pt-3 mb-6 px-4 rounded-t-lg bg-[#44505E]">
-          <Tabs defaultActiveKey="all" tabBarGutter={50} className="custom-tabs">
+          <Tabs
+            defaultActiveKey="all"
+            tabBarGutter={50}
+            className="custom-tabs"
+            onChange={(key) => {
+              setTabKey(key);
+              setPage(1); // reset pagination whenever tab changes
+            }}
+          >
             <TabPane tab="All" key="all" />
-            <TabPane tab="Racing" key="racing" />
-            <TabPane tab="Breeding" key="breeding" />
-            <TabPane tab="Lost" key="lost" />
-            <TabPane tab="Sold" key="sold" />
-            <TabPane tab="Retired" key="retired" />
-            <TabPane tab="Deceased" key="deceased" />
+            <TabPane tab="Racing" key="Racing" />
+            <TabPane tab="Breeding" key="Breeding" />
+            <TabPane tab="Lost" key="Lost" />
+            <TabPane tab="Sold" key="Sold" />
+            <TabPane tab="Retired" key="Retired" />
+            <TabPane tab="Deceased" key="Deceased" />
           </Tabs>
         </div>
 
         <Row gutter={[16, 16]} className="flex flex-wrap px-4 mb-4">
-          {/* Search Bar */}
           <Col xs={24} sm={12} md={6} lg={5}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Search</label>
@@ -181,7 +157,6 @@ const MyPigeon = () => {
             </div>
           </Col>
 
-          {/* Country Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Country</label>
@@ -193,16 +168,15 @@ const MyPigeon = () => {
                 onChange={(value) => handleFilterChange("country", value)}
               >
                 <Option value="all">All</Option>
-                <Option value="bangladesh">Bangladesh</Option>
-                <Option value="usa">USA</Option>
-                <Option value="uk">UK</Option>
-                <Option value="canada">Canada</Option>
-                <Option value="germany">Germany</Option>
+                <Option value="Bangladesh">Bangladesh</Option>
+                <Option value="USA">USA</Option>
+                <Option value="UK">UK</Option>
+                <Option value="Canada">Canada</Option>
+                <Option value="Germany">Germany</Option>
               </Select>
             </div>
           </Col>
 
-          {/* Gender Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Gender</label>
@@ -214,13 +188,12 @@ const MyPigeon = () => {
                 onChange={(value) => handleFilterChange("gender", value)}
               >
                 <Option value="all">All</Option>
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
+                <Option value="Male">Male</Option>
+                <Option value="Female">Female</Option>
               </Select>
             </div>
           </Col>
 
-          {/* Color Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Color</label>
@@ -232,19 +205,18 @@ const MyPigeon = () => {
                 onChange={(value) => handleFilterChange("color", value)}
               >
                 <Option value="all">All</Option>
-                <Option value="white">White</Option>
-                <Option value="red">Red</Option>
-                <Option value="blue">Blue</Option>
-                <Option value="green">Green</Option>
-                <Option value="yellow">Yellow</Option>
+                <Option value="White">White</Option>
+                <Option value="Red">Red</Option>
+                <Option value="Blue">Blue</Option>
+                <Option value="Green">Green</Option>
+                <Option value="Yellow">Yellow</Option>
               </Select>
             </div>
           </Col>
 
-          {/* Status Dropdown */}
           <Col xs={24} sm={12} md={6} lg={4}>
             <div className="flex flex-col">
-              <label className="mb-1 text-gray-300">Status</label>
+              <label className="mb-1 text-gray-300">Verification</label>
               <Select
                 placeholder="Select Status"
                 className="custom-select-ant"
@@ -265,9 +237,8 @@ const MyPigeon = () => {
       <div className="overflow-x-auto border rounded-lg shadow-md bg-gray-50 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
         <div className="border rounded-lg shadow-md bg-gray-50">
           <div
-            style={{
-              minWidth: filteredData.length > 0 ? "max-content" : "100%",
-            }}
+            style={{ minWidth: pigeons.length > 0 ? "max-content" : "100%" }}
+            className="bg-[#333D49] rounded-lg"
           >
             {isLoading ? (
               <div className="flex justify-center items-center p-6">
@@ -277,22 +248,18 @@ const MyPigeon = () => {
               <Table
                 rowSelection={rowSelection}
                 columns={columns}
-                dataSource={paginatedData}
+                dataSource={pigeons}
                 rowClassName={() => "hover-row"}
                 bordered={false}
                 size="small"
                 rowKey="key"
-                scroll={filteredData.length > 0 ? { x: "max-content" } : undefined}
+                scroll={pigeons.length > 0 ? { x: "max-content" } : undefined}
                 pagination={{
                   current: page,
-                  pageSize: pageSize,
-                  total: filteredData.length, // total after filtering
-                  showSizeChanger: true,
-                  pageSizeOptions: ["5", "10", "20", "50"],
-                  onChange: (newPage, newPageSize) => {
-                    setPage(newPage);
-                    setPageSize(newPageSize);
-                  },
+                  pageSize,
+                  total,
+                  showSizeChanger: false, // hide page size selector
+                  onChange: (newPage) => setPage(newPage),
                 }}
                 components={{
                   header: {
@@ -341,14 +308,10 @@ const MyPigeon = () => {
         </div>
       </div>
 
-      {/* AddNewPigeon Modal */}
       <AddNewPigeon
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
-        onSave={() => {
-          // In real use, POST to API then refetch via RTK Query
-          setIsModalVisible(false);
-        }}
+        onSave={() => setIsModalVisible(false)}
       />
     </div>
   );
