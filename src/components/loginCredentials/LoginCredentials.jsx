@@ -170,7 +170,7 @@ const LoginCredentials = () => {
       title: "Actions",
       key: "action",
       align: "center",
-      width: 220,
+      width: 160,
       render: (_, record) => (
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <div className="flex gap-5 border px-4 py-2 rounded">

@@ -181,7 +181,7 @@ const VerifyBreeder = () => {
     {
       title: "Actions",
       key: "actions",
-      width: 160,
+      width: 120,
       render: (_, record) => (
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <div className="flex gap-5 border px-4 py-2 rounded">

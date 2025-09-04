@@ -1,3 +1,4 @@
+// src/components/MonthlyStatsChart.jsx
 import React, { useState, useMemo } from "react";
 import {
   BarChart,
@@ -15,199 +16,19 @@ import {
 } from "recharts";
 import { Table, Select, Button } from "antd";
 import "antd/dist/reset.css";
-import { Filter } from "../../components/common/Svg"; // Import the relevant SVGs
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { useGetAnalyticsQuery } from "../../redux/apiSlices/analysisSlice";
+
+// hook from RTK Query slice
 
 const { Option } = Select;
 
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-
-const components = {
-  header: {
-    row: (props) => (
-      <tr
-        {...props}
-        style={{
-          backgroundColor: "#f0f5f9",
-          height: "50px",
-          color: "secondary",
-          fontSize: "18px",
-          textAlign: "center",
-          padding: "12px",
-        }}
-      />
-    ),
-    cell: (props) => (
-      <th
-        {...props}
-        style={{
-          color: "secondary",
-          fontWeight: "bold",
-          fontSize: "18px",
-          textAlign: "center",
-          padding: "12px",
-        }}
-      />
-    ),
-  },
-};
-
-// Sample data
-const data = [
-  {
-    date: "Jan 2025",
-    category: "Employee",
-    region: "USA",
-    revenue: 100,
-    users: 65,
-    profit: 32,
-  },
-  {
-    date: "Feb 2025",
-    category: "Employee",
-    region: "USA",
-    revenue: 75,
-    users: 60,
-    profit: 27,
-  },
-  {
-    date: "Mar 2025",
-    category: "Employee",
-    region: "USA",
-    revenue: 50,
-    users: 62,
-    profit: 22,
-  },
-  {
-    date: "Apr 2025",
-    category: "Employee",
-    region: "UK",
-    revenue: 69,
-    users: 54,
-    profit: 29,
-  },
-  {
-    date: "May 2025",
-    category: "Employee",
-    region: "UK",
-    revenue: 47,
-    users: 59,
-    profit: 24,
-  },
-  {
-    date: "Jun 2025",
-    category: "Employee",
-    region: "UK",
-    revenue: 60,
-    users: 68,
-    profit: 37,
-  },
-  {
-    date: "Jul 2025",
-    category: "Employee",
-    region: "USA",
-    revenue: 88,
-    users: 57,
-    profit: 45,
-  },
-  {
-    date: "Aug 2025",
-    category: "Employee",
-    region: "USA",
-    revenue: 88,
-    users: 57,
-    profit: 45,
-  },
-  {
-    date: "Sep 2025",
-    category: "Customer",
-    region: "UK",
-    revenue: 38,
-    users: 57,
-    profit: 100,
-  },
-  {
-    date: "Oct 2025",
-    category: "Customer",
-    region: "UK",
-    revenue: 88,
-    users: 57,
-    profit: 45,
-  },
-  {
-    date: "Nov 2025",
-    category: "Customer",
-    region: "USA",
-    revenue: 88,
-    users: 57,
-    profit: 45,
-  },
-  {
-    date: "Dec 2025",
-    category: "Customer",
-    region: "USA",
-    revenue: 88,
-    users: 57,
-    profit: 45,
-  },
-];
-
-// Dropdown options
-const monthYearOptions = [...new Set(data.map((d) => d.date))];
-const categoryOptions = [
-  "All Categories",
-  ...new Set(data.map((d) => d.category)),
-];
-const regionOptions = ["All Regions", ...new Set(data.map((d) => d.region))];
-const metricOptions = ["revenue", "users", "profit"];
-
-const maxValues = {
-  revenue: Math.max(...data.map((d) => d.revenue)),
-  users: Math.max(...data.map((d) => d.users)),
-  profit: Math.max(...data.map((d) => d.profit)),
-};
-
-// Custom 3D Bar with watermark
-const Custom3DBarWithWatermark = ({
-  x,
-  y,
-  width,
-  height,
-  fill,
-  dataKey,
-  payload,
-}) => {
+// Custom 3D Bar with watermark (unchanged)
+const Custom3DBarWithWatermark = ({ x, y, width, height, fill }) => {
   const depth = 10;
-  const maxValue = maxValues[dataKey];
-  const scale = maxValue / payload[dataKey];
-  const watermarkHeight = height * scale;
-  const watermarkY = y - (watermarkHeight - height);
-
   return (
     <g>
-      <g opacity={0.1}>
-        <rect
-          x={x}
-          y={watermarkY}
-          width={width}
-          height={watermarkHeight}
-          fill={fill}
-        />
-        <polygon
-          points={`${x},${watermarkY} ${x + depth},${watermarkY - depth} ${
-            x + width + depth
-          },${watermarkY - depth} ${x + width},${watermarkY}`}
-          fill={fill}
-        />
-        <polygon
-          points={`${x + width},${watermarkY} ${x + width + depth},${
-            watermarkY - depth
-          } ${x + width + depth},${watermarkY + watermarkHeight} ${x + width},${
-            watermarkY + watermarkHeight
-          }`}
-          fill={fill}
-        />
-      </g>
       <rect
         x={x}
         y={y}
@@ -235,28 +56,51 @@ const Custom3DBarWithWatermark = ({
 };
 
 export default function MonthlyStatsChart() {
-  const [selectedMonthYear, setSelectedMonthYear] = useState("All Months");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedRegion, setSelectedRegion] = useState("All Regions");
+  // ---- fetch API data ----
+  const { data, isLoading, error } = useGetAnalyticsQuery();
+  const chartRows = data?.chartData || [];
+
+  const metricOptions = ["Revenue", "User Activity", "Pedigree Statistics"];
   const [selectedMetric, setSelectedMetric] = useState("all");
   const [chartType, setChartType] = useState("Bar");
 
-  const filteredData = useMemo(() => {
-    return data.filter(
-      (d) =>
-        (selectedCategory === "All Categories" ||
-          d.category === selectedCategory) &&
-        (selectedRegion === "All Regions" || d.region === selectedRegion) &&
-        (selectedMonthYear === "All Months" || d.date === selectedMonthYear)
-    );
-  }, [selectedCategory, selectedRegion, selectedMonthYear]);
+  // Dropdown Date Range (all unique)
+  const monthYearOptions = [
+    "All Months",
+    ...new Set(chartRows.map((d) => d.date)),
+  ];
+  const [selectedMonthYear, setSelectedMonthYear] = useState("All Months");
+
+  // Filtered rows
+  const filteredData = useMemo(
+    () =>
+      chartRows.filter(
+        (d) =>
+          selectedMonthYear === "All Months" || d.date === selectedMonthYear
+      ),
+    [chartRows, selectedMonthYear]
+  );
 
   const columns = [
     { title: "Date", dataIndex: "date", key: "date" },
-    { title: "Revenue", dataIndex: "revenue", key: "revenue" },
-    { title: "Users", dataIndex: "users", key: "users" },
-    { title: "Profit", dataIndex: "profit", key: "profit" },
+    { title: "Revenue", dataIndex: "Revenue", key: "Revenue" },
+    {
+      title: "User Activity",
+      dataIndex: "User Activity",
+      key: "User Activity",
+    },
+    {
+      title: "Pedigree Statistics",
+      dataIndex: "Pedigree Statistics",
+      key: "Pedigree Statistics",
+    },
   ];
+
+  if (isLoading) return <p>Loading analytics…</p>;
+  if (error)
+    return (
+      <p className="text-red-500">Failed: {error?.data || error?.error}</p>
+    );
 
   return (
     <div>
@@ -270,11 +114,9 @@ export default function MonthlyStatsChart() {
               <Select
                 value={selectedMonthYear}
                 onChange={setSelectedMonthYear}
-                placeholder="Select Date Range"
                 className="custom-select-ant-white"
                 style={{ width: "100%" }}
               >
-                <Option value="All Months">All Months</Option>
                 {monthYearOptions.map((option) => (
                   <Option key={option} value={option}>
                     {option}
@@ -283,68 +125,14 @@ export default function MonthlyStatsChart() {
               </Select>
             </div>
 
-            {/* Category */}
+            {/* Metric */}
             <div className="flex flex-col w-36">
               <label className="mb-1 text-gray-800">Category</label>
-              <Select
-                value={selectedCategory}
-                onChange={setSelectedCategory}
-                placeholder="Select Category"
-                className="custom-select-ant-white"
-                style={{ width: "100%" }}
-              >
-                {categoryOptions.map((option) => (
-                  <Option key={option} value={option}>
-                    {option}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-
-            {/* Region */}
-            <div className="flex flex-col w-36">
-              <label className="mb-1 text-gray-800">Time of Day</label>
-              <Select
-                value={selectedRegion}
-                onChange={setSelectedRegion}
-                placeholder="Select Region"
-                className="custom-select-ant-white"
-                style={{ width: "100%" }}
-              >
-                {regionOptions.map((option) => (
-                  <Option key={option} value={option}>
-                    {option}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-
-            {/* Region */}
-            {/* <div className="flex flex-col w-36">
-              <label className="mb-1 text-gray-300">Region</label>
-              <Select
-                value={selectedRegion}
-                onChange={setSelectedRegion}
-                placeholder="Select Region"
-                className="custom-select-ant"
-                style={{ width: "100%" }}
-              >
-                {regionOptions.map((option) => (
-                  <Option key={option} value={option}>
-                    {option}
-                  </Option>
-                ))}
-              </Select>
-            </div> */}
-
-            {/* Metric */}
-            {/* <div className="flex flex-col w-36">
-              <label className="mb-1 text-gray-300">Metric</label>
               <Select
                 value={selectedMetric}
                 onChange={setSelectedMetric}
                 placeholder="Select Metric"
-                className="custom-select-ant"
+                className="custom-select-ant-white"
                 style={{ width: "100%" }}
               >
                 <Option value="all">All Metrics</Option>
@@ -354,56 +142,32 @@ export default function MonthlyStatsChart() {
                   </Option>
                 ))}
               </Select>
-            </div> */}
-
-            {/* Chart Type */}
-            {/* <div className="flex flex-col w-36">
-              <label className="mb-1 text-gray-300">Chart Type</label>
-              <Select
-                value={chartType}
-                onChange={setChartType}
-                placeholder="Select Chart Type"
-                className="custom-select-ant"
-                style={{ width: "100%" }}
-              >
-                <Option value="Bar">Bar Chart</Option>
-                <Option value="Line">Line Chart</Option>
-                <Option value="Area">Area Chart</Option>
-              </Select>
-            </div> */}
+            </div>
           </div>
 
+          {/* Export */}
           <div className="flex items-end">
             <Button
               type="primary"
               className="py-5 px-7 font-semibold text-[16px]"
               onClick={() => {
-                // Prepare data
                 const exportData = filteredData.map((row) => ({
                   Date: row.date,
-                  Category: row.category,
-                  Region: row.region,
-                  Revenue: row.revenue,
-                  Users: row.users,
-                  Profit: row.profit,
+                  Revenue: row["Revenue"] || 0,
+                  "User Activity": row["User Activity"] || 0,
+                  "Pedigree Statistics": row["Pedigree Statistics"] || 0,
                 }));
-
-                // Create a worksheet
                 const worksheet = XLSX.utils.json_to_sheet(exportData);
-
-                // Create a workbook and append the worksheet
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-                // Generate Excel file and save
                 const excelBuffer = XLSX.write(workbook, {
                   bookType: "xlsx",
                   type: "array",
                 });
-                const data = new Blob([excelBuffer], {
+                const blob = new Blob([excelBuffer], {
                   type: "application/octet-stream",
                 });
-                saveAs(data, "Monthly_Report.xlsx");
+                saveAs(blob, "Monthly_Report.xlsx");
               }}
             >
               Export Reports
@@ -422,39 +186,33 @@ export default function MonthlyStatsChart() {
             <BarChart
               data={filteredData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              barCategoryGap="20%"
-              barGap={13}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
               <Legend />
-              {(selectedMetric === "all" || selectedMetric === "revenue") && (
+              {(selectedMetric === "all" || selectedMetric === "Revenue") && (
                 <Bar
-                  dataKey="revenue"
+                  dataKey="Revenue"
                   fill="#7086FD"
-                  shape={(props) => (
-                    <Custom3DBarWithWatermark {...props} dataKey="revenue" />
-                  )}
+                  shape={(p) => <Custom3DBarWithWatermark {...p} />}
                 />
               )}
-              {(selectedMetric === "all" || selectedMetric === "users") && (
+              {(selectedMetric === "all" ||
+                selectedMetric === "User Activity") && (
                 <Bar
-                  dataKey="users"
+                  dataKey="User Activity"
                   fill="#6FD195"
-                  shape={(props) => (
-                    <Custom3DBarWithWatermark {...props} dataKey="users" />
-                  )}
+                  shape={(p) => <Custom3DBarWithWatermark {...p} />}
                 />
               )}
-              {(selectedMetric === "all" || selectedMetric === "profit") && (
+              {(selectedMetric === "all" ||
+                selectedMetric === "Pedigree Statistics") && (
                 <Bar
-                  dataKey="profit"
+                  dataKey="Pedigree Statistics"
                   fill="#FFAE4C"
-                  shape={(props) => (
-                    <Custom3DBarWithWatermark {...props} dataKey="profit" />
-                  )}
+                  shape={(p) => <Custom3DBarWithWatermark {...p} />}
                 />
               )}
             </BarChart>
@@ -468,14 +226,24 @@ export default function MonthlyStatsChart() {
               <YAxis />
               <Tooltip />
               <Legend />
-              {(selectedMetric === "all" || selectedMetric === "revenue") && (
-                <Line type="monotone" dataKey="revenue" stroke="#7086FD" />
+              {(selectedMetric === "all" || selectedMetric === "Revenue") && (
+                <Line type="monotone" dataKey="Revenue" stroke="#7086FD" />
               )}
-              {(selectedMetric === "all" || selectedMetric === "users") && (
-                <Line type="monotone" dataKey="users" stroke="#6FD195" />
+              {(selectedMetric === "all" ||
+                selectedMetric === "User Activity") && (
+                <Line
+                  type="monotone"
+                  dataKey="User Activity"
+                  stroke="#6FD195"
+                />
               )}
-              {(selectedMetric === "all" || selectedMetric === "profit") && (
-                <Line type="monotone" dataKey="profit" stroke="#FFAE4C" />
+              {(selectedMetric === "all" ||
+                selectedMetric === "Pedigree Statistics") && (
+                <Line
+                  type="monotone"
+                  dataKey="Pedigree Statistics"
+                  stroke="#FFAE4C"
+                />
               )}
             </LineChart>
           ) : (
@@ -488,26 +256,28 @@ export default function MonthlyStatsChart() {
               <YAxis />
               <Tooltip />
               <Legend />
-              {(selectedMetric === "all" || selectedMetric === "revenue") && (
+              {(selectedMetric === "all" || selectedMetric === "Revenue") && (
                 <Area
                   type="monotone"
-                  dataKey="revenue"
+                  dataKey="Revenue"
                   stroke="#7086FD"
                   fill="#7086FD"
                 />
               )}
-              {(selectedMetric === "all" || selectedMetric === "users") && (
+              {(selectedMetric === "all" ||
+                selectedMetric === "User Activity") && (
                 <Area
                   type="monotone"
-                  dataKey="users"
+                  dataKey="User Activity"
                   stroke="#6FD195"
                   fill="#6FD195"
                 />
               )}
-              {(selectedMetric === "all" || selectedMetric === "profit") && (
+              {(selectedMetric === "all" ||
+                selectedMetric === "Pedigree Statistics") && (
                 <Area
                   type="monotone"
-                  dataKey="profit"
+                  dataKey="Pedigree Statistics"
                   stroke="#FFAE4C"
                   fill="#FFAE4C"
                 />
@@ -517,17 +287,15 @@ export default function MonthlyStatsChart() {
         </ResponsiveContainer>
       </div>
 
-      {/* Ant Design Table */}
-      {/* <div style={{ marginTop: "50px" }}>
+      {/* Ant Design Table (optional)
+      <div style={{ marginTop: "50px" }}>
         <h1 className="text-[22px] font-bold mb-2">Data Table</h1>
         <Table
           bordered={false}
           size="small"
           rowClassName="custom-row"
-          components={components}
-          className="custom-table"
-          columns={columns.filter((col) => selectedMetric === "all" || col.dataIndex === selectedMetric)}
-          dataSource={filteredData.map((row, index) => ({ ...row, key: index }))}
+          columns={columns.filter((c) => selectedMetric === "all" || c.dataIndex === selectedMetric)}
+          dataSource={filteredData.map((r, i) => ({ ...r, key: i }))}
           pagination={{ pageSize: 6 }}
         />
       </div> */}

@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Input, Select, Row, Col, Tabs, Spin } from "antd";
+import {
+  Button,
+  Table,
+  Input,
+  Select,
+  Row,
+  Col,
+  Tabs,
+  Spin,
+  Tooltip,
+  Modal,
+} from "antd";
 import AddNewPigeon from "./AddNewPigeon";
 import { useGetMyPigeonsQuery } from "../../redux/apiSlices/mypigeonSlice";
 import { getImageUrl } from "../common/imageUrl";
 import VerifyIcon from "../../assets/verify.png";
+import { FaTrash, FaEye, FaEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -59,6 +72,29 @@ const getColumns = () => [
       ) : (
         <span>-</span>
       ),
+  },
+  {
+    title: "Actions",
+    key: "actions",
+    width: 120,
+    render: (_, record) => (
+      <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+        <div className="flex gap-5 border px-4 py-2 rounded">
+          <Tooltip title="View & Update Details">
+            <FaEdit
+              style={{ color: "#ffff", fontSize: 16, cursor: "pointer" }}
+              onClick={() => showViewModal(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Delete">
+            <FaTrash
+              style={{ color: "#ff4d4f", fontSize: 16, cursor: "pointer" }}
+              onClick={() => handleDelete(record)}
+            />
+          </Tooltip>
+        </div>
+      </div>
+    ),
   },
 ];
 

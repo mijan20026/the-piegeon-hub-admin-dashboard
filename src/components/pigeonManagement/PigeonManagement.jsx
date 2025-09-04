@@ -1,6 +1,15 @@
 import React, { useState, useMemo } from "react";
-import { Button, Table, Input, Select, Row, Col, Tooltip, Switch } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Table,
+  Input,
+  Select,
+  Row,
+  Col,
+  Tooltip,
+  Modal,
+  Form,
+} from "antd";
 import { FaTrash, FaEye, FaEdit } from "react-icons/fa";
 import PigeonImage from "../../../src/assets/pigeon-image.png";
 import VerifyIcon from "../../../src/assets/verify.png";
@@ -17,7 +26,7 @@ const initialData = [
     verified: "Yes",
     iconic: "Champion",
     iconicScore: 95,
-    country: { name: "USA", icon: GermanyFlag },
+    country: "USA",
     pigeonId: "P1001",
     ringNumber: "R1234",
     birthYear: 2020,
@@ -35,7 +44,7 @@ const initialData = [
     verified: "No",
     iconic: "Elite",
     iconicScore: 88,
-    country: { name: "UK", icon: GermanyFlag },
+    country: "UK",
     pigeonId: "P1002",
     ringNumber: "R1235",
     birthYear: 2021,
@@ -53,7 +62,7 @@ const initialData = [
     verified: "Yes",
     iconic: "Grandmaster",
     iconicScore: 99,
-    country: { name: "Canada", icon: GermanyFlag },
+    country: "Canada",
     pigeonId: "P1003",
     ringNumber: "R1236",
     birthYear: 2019,
@@ -66,210 +75,6 @@ const initialData = [
   },
 ];
 
-const getColumns = () => [
-  {
-    title: "Image",
-    dataIndex: "image",
-    key: "image",
-    width: 100,
-    render: (src) => (
-      <img
-        src={src || PigeonImage}
-        alt="pigeon"
-        style={{
-          width: 50,
-          height: 50,
-          borderRadius: "50%",
-          objectFit: "cover",
-        }}
-      />
-    ),
-  },
-  {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Verified",
-    dataIndex: "verified",
-    key: "verified",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Iconic",
-    dataIndex: "iconic",
-    key: "iconic",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Iconic Score",
-    dataIndex: "iconicScore",
-    key: "iconicScore",
-    render: (text) => text || "-",
-  },
-  // {
-  //   title: "Country",
-  //   dataIndex: "country",
-  //   key: "country",
-  //   render: (country) =>
-  //     country ? (
-  //       <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-  //         {country.icon && (
-  //           <img
-  //             src={country.icon}
-  //             alt={country.name}
-  //             style={{ width: 20, height: 20, borderRadius: "50%" }}
-  //           />
-  //         )}
-  //         <span>{country.name || "-"}</span>
-  //       </div>
-  //     ) : (
-  //       "-"
-  //     ),
-  // },
-  {
-    title: "Country",
-    dataIndex: "country",
-    key: "country",
-    render: (country) => (country ? <span>{country.name || "-"}</span> : "-"),
-  },
-  {
-    title: "Pigeon ID",
-    dataIndex: "pigeonId",
-    key: "pigeonId",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Ring Number",
-    dataIndex: "ringNumber",
-    key: "ringNumber",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Birth Year",
-    dataIndex: "birthYear",
-    key: "birthYear",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Father",
-    dataIndex: "father",
-    key: "father",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Mother",
-    dataIndex: "mother",
-    key: "mother",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Gender",
-    dataIndex: "gender",
-    key: "gender",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Color",
-    dataIndex: "color",
-    key: "color",
-    render: (text) => text || "-",
-  },
-  {
-    title: "Icon",
-    dataIndex: "icon",
-    key: "icon",
-    width: 80,
-    render: (src) =>
-      src && src !== "-" ? (
-        <img
-          src={src}
-          alt="verify"
-          style={{ width: 24, height: 24, objectFit: "cover" }}
-        />
-      ) : (
-        "-"
-      ),
-  },
-  {
-    title: "Actions",
-    key: "actions",
-    width: 160,
-    render: (_, record) => (
-      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-        <div className="flex gap-5 border px-4 py-2 rounded">
-          <Tooltip title="View & Update Details">
-            <FaEye
-              style={{ color: "#ffff", fontSize: "16px", cursor: "pointer" }}
-              onClick={() => showViewModal(record)}
-            />
-          </Tooltip>
-
-          <Tooltip title="Edit">
-            <FaEdit
-              style={{ color: "#ffff", fontSize: "16px", cursor: "pointer" }}
-              onClick={() => handleDelete(record)}
-            />
-          </Tooltip>
-
-          <Tooltip title="Delete">
-            <button
-              onClick={() => {
-                Swal.fire({
-                  title: "Are you sure?",
-                  text: "You won't be able to revert this!",
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085d6",
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "Yes, delete it!",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    setData(data.filter((item) => item.id !== record.id));
-                    Swal.fire({
-                      title: "Deleted!",
-                      text: "User has been deleted.",
-                      icon: "success",
-                    });
-                  }
-                });
-              }}
-              className="text-red-500 hover:text-red-700 text-md"
-            >
-              <FaTrash
-                style={{
-                  color: "text-red-700",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-              />
-            </button>
-          </Tooltip>
-        </div>
-
-        {/* <Tooltip title="Status">
-          <Switch
-            size="small"
-            checked={record.status === "Active"}
-            style={{
-              backgroundColor: record.status === "Active" ? "#3fae6a" : "gray",
-            }}
-            onChange={(checked) => handleStatusChange(record, checked)}
-          />
-        </Tooltip> */}
-      </div>
-    ),
-  },
-];
-
 const PigeonManagement = () => {
   const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
@@ -278,19 +83,61 @@ const PigeonManagement = () => {
   const [filterColor, setFilterColor] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
 
+  // Modal states
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingPigeon, setEditingPigeon] = useState(null);
+
+  const showViewModal = (record) => {
+    setEditingPigeon(record);
+    setIsModalVisible(true);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+    setEditingPigeon(null);
+  };
+
+  const handleModalSave = (values) => {
+    setData((prev) =>
+      prev.map((item) =>
+        item.key === editingPigeon.key ? { ...item, ...values } : item
+      )
+    );
+    setIsModalVisible(false);
+    setEditingPigeon(null);
+  };
+
+  const handleDelete = (record) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setData(data.filter((item) => item.key !== record.key));
+        Swal.fire("Deleted!", "Pigeon has been deleted.", "success");
+      }
+    });
+  };
+
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       const matchesSearch =
         item.name.toLowerCase().includes(search.toLowerCase()) ||
         item.ringNumber.toLowerCase().includes(search.toLowerCase());
-
       const matchesCountry =
         filterCountry === "all" ||
-        item.country.name.toLowerCase() === filterCountry;
+        item.country.name.toLowerCase() === filterCountry.toLowerCase();
       const matchesGender =
-        filterGender === "all" || item.gender.toLowerCase() === filterGender;
+        filterGender === "all" ||
+        item.gender.toLowerCase() === filterGender.toLowerCase();
       const matchesColor =
-        filterColor === "all" || item.color.toLowerCase() === filterColor;
+        filterColor === "all" ||
+        item.color.toLowerCase() === filterColor.toLowerCase();
       const matchesStatus =
         filterStatus === "all" ||
         (filterStatus === "verified"
@@ -307,17 +154,80 @@ const PigeonManagement = () => {
     });
   }, [data, search, filterCountry, filterGender, filterColor, filterStatus]);
 
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log("Selected row keys:", selectedRowKeys, selectedRows);
+  const getColumns = () => [
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      width: 100,
+      render: (src) => (
+        <img
+          src={src || PigeonImage}
+          alt="pigeon"
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      ),
     },
-  };
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Verified", dataIndex: "verified", key: "verified" },
+    { title: "Iconic", dataIndex: "iconic", key: "iconic" },
+    { title: "Iconic Score", dataIndex: "iconicScore", key: "iconicScore" },
+    { title: "Country", dataIndex: "country", key: "country" },
+    { title: "Pigeon ID", dataIndex: "pigeonId", key: "pigeonId" },
+    { title: "Ring Number", dataIndex: "ringNumber", key: "ringNumber" },
+    { title: "Birth Year", dataIndex: "birthYear", key: "birthYear" },
+    { title: "Father", dataIndex: "father", key: "father" },
+    { title: "Mother", dataIndex: "mother", key: "mother" },
+    { title: "Gender", dataIndex: "gender", key: "gender" },
+    { title: "Status", dataIndex: "status", key: "status" },
+    { title: "Color", dataIndex: "color", key: "color" },
+    {
+      title: "Icon",
+      dataIndex: "icon",
+      key: "icon",
+      width: 80,
+      render: (src) =>
+        src && src !== "-" ? (
+          <img src={src} alt="verify" style={{ width: 24, height: 24 }} />
+        ) : (
+          "-"
+        ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+          <div className="flex gap-5 border px-4 py-2 rounded">
+            <Tooltip title="View & Update Details">
+              <FaEdit
+                style={{ color: "#ffff", fontSize: 16, cursor: "pointer" }}
+                onClick={() => showViewModal(record)}
+              />
+            </Tooltip>
+            <Tooltip title="Delete">
+              <FaTrash
+                style={{ color: "#ff4d4f", fontSize: 16, cursor: "pointer" }}
+                onClick={() => handleDelete(record)}
+              />
+            </Tooltip>
+          </div>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="w-full">
-      {/* Tabs and Filters */}
+      {/* Filters */}
       <div className="bg-[#333D49] rounded-lg shadow-lg border border-gray-200 mb-2 mt-6">
-        <Row gutter={[16, 16]} className="flex flex-wrap px-4 mb-4 mt-4">
+        <Row gutter={[16, 16]} className="px-4 mb-4 mt-4">
           <Col xs={24} sm={12} md={6} lg={5}>
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Search</label>
@@ -333,11 +243,9 @@ const PigeonManagement = () => {
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Country</label>
               <Select
-                placeholder="Select Country"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
                 value={filterCountry}
-                onChange={(val) => setFilterCountry(val)}
+                onChange={setFilterCountry}
               >
                 <Option value="all">All</Option>
                 <Option value="usa">USA</Option>
@@ -351,11 +259,9 @@ const PigeonManagement = () => {
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Gender</label>
               <Select
-                placeholder="Select Gender"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
                 value={filterGender}
-                onChange={(val) => setFilterGender(val)}
+                onChange={setFilterGender}
               >
                 <Option value="all">All</Option>
                 <Option value="male">Male</Option>
@@ -367,11 +273,9 @@ const PigeonManagement = () => {
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Color</label>
               <Select
-                placeholder="Select Color"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
                 value={filterColor}
-                onChange={(val) => setFilterColor(val)}
+                onChange={setFilterColor}
               >
                 <Option value="all">All</Option>
                 <Option value="red">Red</Option>
@@ -385,11 +289,9 @@ const PigeonManagement = () => {
             <div className="flex flex-col">
               <label className="mb-1 text-gray-300">Status</label>
               <Select
-                placeholder="Select Status"
                 className="custom-select-ant"
-                style={{ width: "100%" }}
                 value={filterStatus}
-                onChange={(val) => setFilterStatus(val)}
+                onChange={setFilterStatus}
               >
                 <Option value="all">All</Option>
                 <Option value="verified">Verified</Option>
@@ -405,7 +307,6 @@ const PigeonManagement = () => {
         <div className="border rounded-lg shadow-md bg-gray-50">
           <div style={{ minWidth: "max-content" }}>
             <Table
-              rowSelection={rowSelection}
               columns={getColumns()}
               dataSource={filteredData}
               rowClassName={() => "hover-row"}
@@ -444,7 +345,7 @@ const PigeonManagement = () => {
                 },
               }}
               bordered={false}
-              pagination={false}
+              pagination={{ pageSize: 5 }}
               size="small"
               scroll={{ x: "max-content" }}
               rowKey="key"
@@ -452,6 +353,250 @@ const PigeonManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* View & Update Modal */}
+      <Modal
+        title="View & Update Pigeon"
+        open={isModalVisible}
+        onCancel={handleModalCancel}
+        width={800}
+        footer={null}
+      >
+        {editingPigeon && (
+          <Form
+            layout="vertical"
+            initialValues={{
+              ...editingPigeon,
+              country: editingPigeon.country?.name || "",
+              gender: editingPigeon.gender,
+              status: editingPigeon.status,
+              iconic: editingPigeon.iconic,
+              iconicScore: editingPigeon.iconicScore,
+              father: editingPigeon.father,
+              mother: editingPigeon.mother,
+              color: editingPigeon.color,
+              pigeonId: editingPigeon.pigeonId,
+              ringNumber: editingPigeon.ringNumber,
+              name: editingPigeon.name,
+              verified: editingPigeon.verified,
+              birthYear: editingPigeon.birthYear,
+            }}
+            onFinish={handleModalSave}
+            className="mb-6"
+          >
+            <Row gutter={[30, 20]}>
+              {/* Name */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Name"
+                  name="name"
+                  rules={[{ required: true, message: "Please enter name" }]}
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Name"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Pigeon ID */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Pigeon ID"
+                  name="pigeonId"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Pigeon ID"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Ring Number */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Ring Number"
+                  name="ringNumber"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Ring Number"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Birth Year */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Birth Year"
+                  name="birthYear"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    type="number"
+                    placeholder="Enter Birth Year"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Father */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Father"
+                  name="father"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Father's Name"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Mother */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Mother"
+                  name="mother"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Mother's Name"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Gender */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Gender"
+                  name="gender"
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Gender"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="Male">Male</Option>
+                    <Option value="Female">Female</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Status */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Status"
+                  name="status"
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Status"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="Active">Active</Option>
+                    <Option value="Inactive">Inactive</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Country */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Country"
+                  name="country"
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Country"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="USA">USA</Option>
+                    <Option value="UK">UK</Option>
+                    <Option value="Canada">Canada</Option>
+                    <Option value="Germany">Germany</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Verified */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Verified"
+                  name="verified"
+                  className="custom-form-item-ant-select"
+                >
+                  <Select
+                    placeholder="Select Verified Status"
+                    className="custom-select-ant-modal"
+                  >
+                    <Option value="Yes">Yes</Option>
+                    <Option value="No">No</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+
+              {/* Iconic */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Iconic"
+                  name="iconic"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Iconic Level"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Iconic Score */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Iconic Score"
+                  name="iconicScore"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    type="number"
+                    placeholder="Enter Iconic Score"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+
+              {/* Color */}
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label="Color"
+                  name="color"
+                  className="custom-form-item-ant"
+                >
+                  <Input
+                    placeholder="Enter Color"
+                    className="custom-input-ant-modal"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {/* Footer Buttons */}
+            <div className="flex justify-end mt-4">
+              <Button onClick={handleModalCancel} style={{ marginRight: 8 }}>
+                Cancel
+              </Button>
+              <Button type="primary" htmlType="submit">
+                Save
+              </Button>
+            </div>
+          </Form>
+        )}
+      </Modal>
     </div>
   );
 };

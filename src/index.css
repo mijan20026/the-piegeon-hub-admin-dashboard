@@ -339,6 +339,18 @@ select {
   color: #18191b !important;
 }
 
+/* Keep default border visible */
+.custom-select-ant-white .ant-select-selector {
+  border: 1px solid #9ca3af !important;  /* default gray border */
+}
+
+/* Change border color when active/focused */
+.custom-select-ant-white.ant-select-focused .ant-select-selector {
+  border-color: #181818 !important;      /* yellow border on focus */
+  box-shadow: none !important;           /* optional: remove shadow */
+}
+
+
 /* Arrow icon styling */
 .custom-select-ant-white .ant-select-arrow {
   top: 60% !important; /* vertically center arrow */
@@ -348,10 +360,10 @@ select {
 }
 
 /* Remove focus styles */
-.custom-select-ant-white.ant-select-focused .ant-select-selector {
-  border-color: #ffffff !important; /* keep same border on focus */
-  box-shadow: none !important; /* remove blue focus shadow */
-}
+/* .custom-select-ant-white.ant-select-focused .ant-select-selector {
+  border-color: #ffffff !important;
+  box-shadow: none !important;
+} */
 
 /* Search bar */
 .custom-input-ant {
