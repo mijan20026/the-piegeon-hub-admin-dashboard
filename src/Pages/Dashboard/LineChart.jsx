@@ -12,6 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import { useGetMonthlyRevenueQuery } from "../../redux/apiSlices/dashboardSlice";
+import { data } from "autoprefixer";
 
 // Registering chart.js components
 ChartJS.register(
@@ -45,6 +46,8 @@ const LineChart = () => {
   // Fetch revenue data from API
   const { data: revenueData = [], isLoading } =
     useGetMonthlyRevenueQuery(selectedYear);
+
+    console.log(data)
 
   // Effect to update chart height based on screen size
   useEffect(() => {

@@ -116,8 +116,7 @@ const MyPigeon = () => {
   const { data, isLoading } = useGetMyPigeonsQuery({
     page,
     limit: pageSize,
-    // search: filters.search || undefined,
-    searchTerm: filters.search || undefined, // <-- rename here
+    searchTerm: filters.search || undefined,
     country: filters.country !== "all" ? filters.country : undefined,
     gender: filters.gender !== "all" ? filters.gender : undefined,
     color: filters.color !== "all" ? filters.color : undefined,
@@ -127,7 +126,7 @@ const MyPigeon = () => {
         : filters.status === "notverified"
         ? false
         : undefined,
-    status: tabKey !== "all" ? tabKey : undefined, // <-- add this
+    status: tabKey !== "all" ? tabKey : undefined,
   });
 
   const pigeons = data?.pigeons || [];

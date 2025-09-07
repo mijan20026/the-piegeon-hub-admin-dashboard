@@ -24,7 +24,10 @@ const mypigeonSlice = api.injectEndpoints({
         if (color) params.append("color", color);
         if (verified !== undefined) params.append("verified", verified);
         if (status) params.append("status", status); // <-- append tab status
-        return { url: `/pigeon?${params.toString()}`, method: "GET" };
+        return {
+          url: `/pigeon/myAllpigeons?${params.toString()}`,
+          method: "GET",
+        };
       },
       transformResponse: (response) => {
         const pigeons = response?.data?.data?.map((pigeon) => ({

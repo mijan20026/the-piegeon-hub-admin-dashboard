@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Table } from "antd";
-import { useGetPigeonsQuery } from "../../redux/apiSlices/dashboardSlice";
 import VerifyIcon from "../../../src/assets/verify.png";
 import { getImageUrl } from "../common/imageUrl";
 import PigeonImage from "../../../src/assets/pigeon-image.png";
+import { useGetRecentPigeonsQuery } from "../../redux/apiSlices/dashboardSlice";
 
 // const getImageUrlTable = (path) =>
 //   path ? `${getImageUrl}${path}` : PigeonImage;
@@ -65,11 +65,14 @@ const getColumns = () => [
 const PigeonTable = () => {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError } = useGetPigeonsQuery({ page, limit: 10 });
-  console.log(data);
+  const { data, isLoading, isError } = useGetRecentPigeonsQuery({
+    page,
+    limit: 10,
+  });
+  // console.log(data);
 
   const pigeons = data?.pigeons || [];
-  console.log(pigeons);
+  // console.log(pigeons);
   const pagination = data?.pagination || {};
 
   const columns = getColumns();
@@ -136,12 +139,13 @@ const PigeonTable = () => {
                 },
               }}
               bordered={false}
-              pagination={{
-                current: pagination.page,
-                pageSize: pagination.limit,
-                total: pagination.total,
-                onChange: (page) => setPage(page),
-              }}
+              // pagination={{
+              //   current: pagination.page,
+              //   pageSize: pagination.limit,
+              //   total: pagination.total,
+              //   onChange: (page) => setPage(page),
+              // }}
+              pagination={false}
               size="small"
               scroll={{ x: "max-content" }}
               rowKey="key"
