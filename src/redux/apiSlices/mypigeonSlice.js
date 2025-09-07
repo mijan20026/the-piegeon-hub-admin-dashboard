@@ -2,6 +2,7 @@ import { api } from "../api/baseApi";
 
 const mypigeonSlice = api.injectEndpoints({
   endpoints: (builder) => ({
+    // ---------- GET ----------
     getMyPigeons: builder.query({
       query: ({
         page = 1,
@@ -18,12 +19,12 @@ const mypigeonSlice = api.injectEndpoints({
         params.append("page", page);
         params.append("limit", limit);
         if (search) params.append("search", search);
-        if (searchTerm) params.append("searchTerm", searchTerm); // <-- rename here
+        if (searchTerm) params.append("searchTerm", searchTerm);
         if (country) params.append("country", country);
         if (gender) params.append("gender", gender);
         if (color) params.append("color", color);
         if (verified !== undefined) params.append("verified", verified);
-        if (status) params.append("status", status); // <-- append tab status
+        if (status) params.append("status", status);
         return {
           url: `/pigeon/myAllpigeons?${params.toString()}`,
           method: "GET",
@@ -52,8 +53,56 @@ const mypigeonSlice = api.injectEndpoints({
         }));
         return { pigeons, pagination: response?.data?.pagination || {} };
       },
+      providesTags: (result) =>
+        result?.pigeons
+          ? [
+              ...result.pigeons.map((p) => ({ type: "Pigeon", id: p.key })),
+              { type: "Pigeon", id: "LIST" },
+            ]
+          : [{ type: "Pigeon", id: "LIST" }],
+    }),
+
+    // ---------- POST ----------
+    addPigeon: builder.mutation({
+      query: ({ data, imageFile, token }) => {
+        const formData = new FormData();
+
+        // Append JSON fields as 'data'
+        formData.append("data", JSON.stringify(data));
+
+        // Append image file
+        if (imageFile) {
+          formData.append("image", imageFile);
+        }
+
+        return {
+          url: "/pigeon",
+          method: "POST",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`, // Include auth token
+          },
+        };
+      },
+      invalidatesTags: [{ type: "Pigeon", id: "LIST" }],
+    }),
+
+    // ---------- DELETE ----------
+    deletePigeon: builder.mutation({
+      query: (id) => ({
+        url: `/pigeon/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Pigeon", id },
+        { type: "Pigeon", id: "LIST" },
+      ],
     }),
   }),
 });
 
-export const { useGetMyPigeonsQuery } = mypigeonSlice;
+export const {
+  useGetMyPigeonsQuery,
+  useAddPigeonMutation,
+  useDeletePigeonMutation,
+} = mypigeonSlice;
