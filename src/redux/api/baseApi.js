@@ -18,9 +18,18 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://10.10.7.41:5001/api/v1",
     // baseUrl: "http://10.10.7.46:5006/api/v1",
+    // prepareHeaders: (headers) => {
+    //   headers.set("ngrok-skip-browser-warning", "true");
+    //   const token = localStorage.getItem("token");
+    //   if (token) {
+    //     headers.set("authorization", `Bearer ${token}`);
+    //   }
+    //   return headers;
+    // },
     prepareHeaders: (headers) => {
       headers.set("ngrok-skip-browser-warning", "true");
       const token = localStorage.getItem("token");
+      console.log("📤 Sending token in headers:", token); // 🔹 debug
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
       }

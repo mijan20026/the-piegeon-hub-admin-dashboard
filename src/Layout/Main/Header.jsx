@@ -14,9 +14,11 @@ const Header = () => {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const src = user?.image?.startsWith("https")
-    ? user?.image
-    : `${getImageUrl}/${user?.image}`;
+  // const src = user?.profileImage?.startsWith("https")
+  //   ? user?.profileImage
+  //   : `${getImageUrl}/${user?.profileImage}`;
+
+  const src = user?.profileImage;
 
   const showLogoutConfirm = () => {
     setIsLogoutModalOpen(true); // Show the confirmation modal
@@ -93,12 +95,16 @@ const Header = () => {
             <div className="flex flex-row gap-1">
               <p>Hello,</p>
               <p className="text-[16px] font-semibold">
-                {user?.name || "Sabbir"}
+                {user?.name || "Mijan"}
               </p>
             </div>
             <img
               style={{ clipPath: "circle()", width: 45, height: 45 }}
-              src={Avatar}
+              src={
+                user?.profileImage
+                  ? getImageUrl(user.profileImage)
+                  : "/placeholder.png"
+              }
               alt="profile-pic"
               className="clip"
             />

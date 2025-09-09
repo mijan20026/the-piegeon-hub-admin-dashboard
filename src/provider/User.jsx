@@ -1,27 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useGetProfileQuery } from "../redux/apiSlices/profileSlice";
+
 export const UserContext = React.createContext(null);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
-  const profile = {
-    firstName: "Test",
-    lastName: "User",
-    email: "mithilakhan082@gmail.com",
-    mobileNumber: "01812038369",
-    location: "Dhaka, Bangladesh",
-    image:
-      "https://avatars.design/wp-content/uploads/2021/02/corporate-avatars-TN-1.jpg",
-  };
+  const { data, isFetching, error } = useGetProfileQuery();
 
   useEffect(() => {
-    if (profile && !user) {
-      setUser(profile);
+    if (data && !isFetching && !error) {
+      setUser(data);
     }
-  }, [profile, user]);
+  }, [data, isFetching, error]);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, isFetching, error }}>
       {children}
     </UserContext.Provider>
   );
