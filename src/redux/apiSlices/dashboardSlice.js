@@ -28,12 +28,8 @@ const dashboardSlice = api.injectEndpoints({
           breeder: pigeon.breeder,
           ringNumber: pigeon.ringNumber,
           birthYear: pigeon.birthYear,
-          father: pigeon.fatherRingId
-            ? `${pigeon.fatherRingId.name}`
-            : "-",
-          mother: pigeon.motherRingId
-            ? `${pigeon.motherRingId.name}`
-            : "-",
+          father: pigeon.fatherRingId ? `${pigeon.fatherRingId.name}` : "-",
+          mother: pigeon.motherRingId ? `${pigeon.motherRingId.name}` : "-",
           gender: pigeon.gender,
           status: pigeon.status,
           verified: pigeon.verified ? "Yes" : "No",

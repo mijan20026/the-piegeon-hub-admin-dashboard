@@ -40,6 +40,7 @@ export const profileSlice = api.injectEndpoints({
           confirmPassword: passwordData.confirm_password,
         },
       }),
+      invalidatesTags: ["Profile"],
     }),
   }),
 });

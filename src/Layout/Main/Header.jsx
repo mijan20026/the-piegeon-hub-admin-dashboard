@@ -99,14 +99,18 @@ const Header = () => {
               </p>
             </div>
             <img
-              style={{ clipPath: "circle()", width: 45, height: 45 }}
               src={
                 user?.profileImage
                   ? getImageUrl(user.profileImage)
                   : "/placeholder.png"
               }
               alt="profile-pic"
-              className="clip"
+              style={{
+                width: 45,
+                height: 45,
+                borderRadius: "50%",
+                objectFit: "cover", // ensures the image fills without distortion
+              }}
             />
           </div>
         </Dropdown>
